@@ -2,9 +2,7 @@ div.varianttrack-sublabel {
     z-index: 10;
     overflow: hidden;
     cursor: pointer;
-    border-top: 0.1px solid #999;
-    border-left: 0.1px solid #999;
-    border-right: 0.1px solid #999;
+    border: 0.1px solid #999;
     color: #111;
     font-weight: bold;
 }

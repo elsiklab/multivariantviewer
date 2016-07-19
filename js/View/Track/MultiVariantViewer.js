@@ -41,7 +41,9 @@ function(
                 addRect: function(id, left, right, height, data) {
                     this.pTotalHeight = Object.keys(data.get('genotypes')).length/4 * thisB.config.style.height;
                     if (!thisB.promiseHeight.isResolved()) {
-                        thisB.promiseHeight.resolve(Object.keys(data.get('genotypes')));
+                        var ret = data.get('genotypes');
+                        delete ret.toString;
+                        thisB.promiseHeight.resolve(Object.keys(ret));
                     }
                     return this.pTotalHeight;
                 }
@@ -60,7 +62,7 @@ function(
                             id: key,
                             style: {
                                 position: 'absolute',
-                                height: thisB.config.style.height + 'px',
+                                height: thisB.config.style.height-1 + 'px',
                                 width: thisB.config.showLabels ? (thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null) : '10px',
                                 font: thisB.config.labelFont,
                                 fontSize: thisB.config.labelFontSize,
@@ -82,7 +84,7 @@ function(
         updateStaticElements: function(coords) {
             this.inherited(arguments);
             if (this.sublabels && 'x' in coords) {
-                var height = this.config.style.height;
+                var height = this.config.style.height + (this.config.style.offset || 0);
                 array.forEach(this.sublabels, function(sublabel, i) {
                     sublabel.style.left = coords.x + 'px';
                     sublabel.style.top = i * height + 'px';

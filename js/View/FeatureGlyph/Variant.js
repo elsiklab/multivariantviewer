@@ -18,8 +18,10 @@ function(
             if (fRect.f.get('type') !== 'SNV') return null;
 
             var genotypes = fRect.f.get('genotypes');
+            delete genotypes.toString;
             var color = lang.hitch(this, 'getColor');
             var style = lang.hitch(this, 'getStyle');
+            var height = this._getFeatureHeight(fRect.viewInfo, fRect.f);
 
             Object.keys(genotypes).forEach(function(key, ret) {
                 var col;
@@ -35,8 +37,8 @@ function(
                 } else {
                     col = color(fRect.f, 'ref');
                 }
-                var offset = ret * style(fRect.f, 'height');
-                this.renderBox(context, fRect.viewInfo, fRect.f, offset, 1, fRect.f, function() { return col; });
+                var offset = ret * (style(fRect.f, 'height') + (style(fRect.f, 'offset') || 0));
+                this.renderBox(context, fRect.viewInfo, fRect.f, offset, height, fRect.f, function() { return col; });
             }, this);
         }
     });
