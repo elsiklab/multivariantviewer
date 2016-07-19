@@ -65,7 +65,6 @@ function(
                                 height: thisB.config.style.height-1 + 'px',
                                 width: thisB.config.showLabels ? (thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null) : '10px',
                                 font: thisB.config.labelFont,
-                                fontSize: thisB.config.labelFontSize,
                                 backgroundColor: thisB.colors[key],
                                 zIndex: 1000
                             },
