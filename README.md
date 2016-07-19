@@ -2,7 +2,37 @@
 
 A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file (VCF with multiple individuals)
 
+## Options
+
+* style->height - Pixel height of each individual. Default: 5
+* style->offset - Pixel offset between individuals. Default: 0
+* style->color - A color or a callback that returns colors. The callback signature is `function(feature, string ['ref' or 'alt'], genotype [the actual genotype as 0|0 or 0|1 or similar])`
+
+Subtrack label options
+
+* showLabels - Display actual labels inside the small icons specified by showTooltips (boolean)
+* showTooltips - Display squares with a mouseover tooltips with subtrack label (boolean)
+* labelFont - Specify subtrack label font CSS e.g. "6px sans-serif"
+* labelWidth - Specify a specific width for all subtrack labels
+* labelColors - An array of structures like {"name": "sample1", "color": "red"}
+
+
 ## Example configuration
+
+
+In tracks.conf format
+
+    [tracks.variant]
+    urlTemplate=file.vcf.gz
+    storeClass=JBrowse/Store/SeqFeature/VCFTabix
+    type=MultiVariantViewer/View/Track/MultiVariantViewer
+    showLabels=true
+    labelFont=4px sans-serif
+    style.height=10
+    labelColors+=json:{"name": "sample1", "color": "blue"}
+    labelColors+=json:{"name": "sample2", "color": "red"}
+
+In trackList.json format
 
     {
         "type": "MultiVariantViewer/View/Track/MultiVariantViewer",
@@ -14,19 +44,6 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
             "color": "function(feat,gt,fullgt) { return gt=='ref'? 'blue': 'orange'; }"
         }
     }
-
-## Options
-
-* style->height - pixel height of each individual. Default: 5
-* style->offset - pixel offset between individuals. Default: 0
-* style->color - a color or a callback that returns a colors for each individual. function callback signature is function(feature, string ['ref' or 'alt'], genotype [the actual genotype as 0|0 or 0|1 or similar]). defaults to coloring 'ref' as green and 'alt' as red
-
-Subtrack label options
-
-* showLabels - Display actual labels inside the small icons specified by showTooltips (boolean)
-* showTooltips - Display squares with a mouseover tooltips with subtrack label (boolean)
-* labelFont - Specify subtrack label font CSS e.g. "6px sans-serif"
-* labelWidth - Specify a specific width for all subtrack labels
 
 
 

@@ -18,9 +18,11 @@ function(
 ) {
     return declare(CanvasVariants, {
         constructor: function() {
-            this.colors = array.map(this.config.vcfnames, function(elt) {
-                return elt.color;
-            });
+            this.colors = {};
+            array.forEach(this.config.labelColors, function(elt) {
+                this.colors[elt.name] = elt.color;
+            }, this);
+
             this.promiseHeight = new Deferred();
         },
         _defaultConfig: function() {
