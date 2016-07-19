@@ -26,7 +26,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ![](img/example.png)
 
-Shows 1000genomes data VCF data
+Shows 1000genomes VCF data
 
 ## Installation
 
@@ -34,5 +34,9 @@ Clone the repo to your plugins directory and name it VariantTrack
 
     git clone https://github.com/cmdcolin/multivariantviewer MultiVariantViewer
 
-Then add it to your jbrowse config using "plugins": ["MultiVariantViewer"] or similar. http://gmod.org/wiki/JBrowse_FAQ#How_do_I_install_a_plugin
+Then add it to your jbrowse config
+
+    "plugins": ["MultiVariantViewer"]
+    
+See http://gmod.org/wiki/JBrowse_FAQ#How_do_I_install_a_plugin for more details
 
