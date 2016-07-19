@@ -1,86 +1,93 @@
-define( [   
-            'dojo/_base/declare',
-            'dojo/_base/array',
-            'dojo/_base/lang',
-            'JBrowse/View/Track/CanvasVariants',
-            'JBrowse/Util'
-        ],
-        function(
-            declare,
-            array,
-            lang,
-            CanvasVariants,
-            Util
-        ) {
-
-var dojof = Util.dojof;
-
-return declare( CanvasVariants,
-{
-    
-    _defaultConfig: function () {
-        return Util.deepUpdate(
-            lang.clone( this.inherited(arguments) ),
-            {
-                "glyph": "MultiVariantViewer/View/FeatureGlyph/Variant",
-                "style": {
-                    "color": function(feat, gt, gt_full) { return gt=='ref'? 'blue': 'orange'; }
+define([
+    'dojo/_base/declare',
+    'dojo/_base/array',
+    'dojo/_base/lang',
+    'JBrowse/View/Track/CanvasVariants',
+    'JBrowse/Util',
+    'dijit/Tooltip',
+    'dojo/Deferred'
+],
+function(
+    declare,
+    array,
+    lang,
+    CanvasVariants,
+    Util,
+    Tooltip,
+    Deferred
+) {
+    return declare(CanvasVariants, {
+        constructor: function() {
+            this.colors = array.map(this.config.vcfnames, function(elt) {
+                return elt.color;
+            });
+            this.promiseHeight = new Deferred();
+        },
+        _defaultConfig: function() {
+            return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
+                glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
+                style: {
+                    color: function(feat, gt, gtFull) { return gt == 'ref' ? 'blue' : 'orange'; },
+                    height: 5
                 }
             });
-    },
+        },
 
-    // override getLayout to access addRect method
-    _getLayout: function () {
-        var thisB = this;
-        var layout = this.inherited(arguments);
-        return declare.safeMixin(layout, {
-            addRect: function (id, left, right, height, data) {
-                this.pTotalHeight = dojof.keys( data.get('genotypes') ).length/2 * (thisB.config.style.spacer||thisB.config.style.height||2);
-                return this.pTotalHeight;
-            }
-        });
-    },
+        // override getLayout to access addRect method
+        _getLayout: function() {
+            var thisB = this;
+            var layout = this.inherited(arguments);
+            return declare.safeMixin(layout, {
+                addRect: function(id, left, right, height, data) {
+                    this.pTotalHeight = Object.keys(data.get('genotypes')).length/4 * thisB.config.style.height;
+                    if (!thisB.promiseHeight.isResolved()) {
+                        thisB.promiseHeight.resolve(Object.keys(data.get('genotypes')));
+                    }
+                    return this.pTotalHeight;
+                }
+            });
+        },
 
-    makeTrackLabel: function() {
-        var canvasHeight = this.config.style.height;
-        var kheight = canvasHeight / (Object.keys(this.nameMap).length);
+        makeTrackLabel: function() {
+            var thisB = this;
+            this.inherited(arguments);
 
-        this.inherited(arguments);
-        if (this.config.showLabels || this.config.showTooltips) {
-            this.sublabels = array.map(Object.keys(this.nameMap), function(key) {
-                var elt = dojo.create('div', {
-                    className: 'track-sublabel',
-                    id: key,
-                    style: {
-                        position: 'absolute',
-                        height: kheight + 'px',
-                        width: this.config.showLabels ? (this.config.labelWidth ? this.config.labelWidth + 'px' : null) : '10px',
-                        font: this.config.labelFont,
-                        fontSize: this.config.labelFontSize,
-                        backgroundColor: this.config.urlTemplates[this.nameMap[key]].color
-                    },
-                    innerHTML: this.config.showLabels ? key : ''
-                }, this.div);
-                elt.tooltip = new Tooltip({
-                    connectId: key,
-                    label: key,
-                    showDelay: 0
+            this.promiseHeight.then(function(genotypes) {
+                if (thisB.config.showLabels || thisB.config.showTooltips) {
+                    thisB.sublabels = array.map(genotypes, function(key) {
+                        var elt = dojo.create('div', {
+                            className: 'varianttrack-sublabel',
+                            id: key,
+                            style: {
+                                position: 'absolute',
+                                height: thisB.config.style.height + 'px',
+                                width: thisB.config.showLabels ? (thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null) : '10px',
+                                font: thisB.config.labelFont,
+                                fontSize: thisB.config.labelFontSize,
+                                backgroundColor: thisB.colors[key],
+                                zIndex: 1000
+                            },
+                            innerHTML: thisB.config.showLabels ? key : ''
+                        }, thisB.div);
+                        elt.tooltip = new Tooltip({
+                            connectId: key,
+                            label: key,
+                            showDelay: 0
+                        });
+                        return elt;
+                    });
+                }
+            });
+        },
+        updateStaticElements: function(coords) {
+            this.inherited(arguments);
+            if (this.sublabels && 'x' in coords) {
+                var height = this.config.style.height;
+                array.forEach(this.sublabels, function(sublabel, i) {
+                    sublabel.style.left = coords.x + 'px';
+                    sublabel.style.top = i * height + 'px';
                 });
-
-                return elt;
-            }, this);
+            }
         }
-    },
-    updateStaticElements: function(/** Object*/ coords) {
-        this.inherited(arguments);
-        var height = this.config.style.height;
-        if (this.sublabels && 'x' in coords) {
-            var len = this.sublabels.length;
-            array.forEach(this.sublabels, function(sublabel, i) {
-                sublabel.style.left = coords.x + 'px';
-                sublabel.style.top = i * height / len + 'px';
-            }, this);
-        }
-    }
-});
+    });
 });
