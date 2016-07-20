@@ -41,7 +41,7 @@ function(
             var layout = this.inherited(arguments);
             return declare.safeMixin(layout, {
                 addRect: function(id, left, right, height, data) {
-                    this.pTotalHeight = Object.keys(data.get('genotypes')).length/4 * thisB.config.style.height;
+                    this.pTotalHeight = Object.keys(data.get('genotypes')).length / 4 * thisB.config.style.height;
                     if (!thisB.promiseHeight.isResolved()) {
                         var ret = data.get('genotypes');
                         delete ret.toString;
@@ -64,11 +64,11 @@ function(
                             id: key,
                             style: {
                                 position: 'absolute',
-                                height: thisB.config.style.height-1 + 'px',
+                                height: thisB.config.style.height - 1 + 'px',
                                 width: thisB.config.showLabels ? (thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null) : '10px',
                                 font: thisB.config.labelFont,
                                 backgroundColor: thisB.colors[key],
-                                zIndex: 1000
+                                zIndex: 18 // same as main track label
                             },
                             innerHTML: thisB.config.showLabels ? key : ''
                         }, thisB.div);
