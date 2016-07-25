@@ -54,8 +54,6 @@ function(
 
         makeTrackLabel: function() {
             var thisB = this;
-            this.inherited(arguments);
-
             this.promiseHeight.then(function(genotypes) {
                 if (thisB.config.showLabels || thisB.config.showTooltips) {
                     thisB.sublabels = array.map(genotypes, function(key) {
@@ -81,6 +79,7 @@ function(
                     });
                 }
             });
+            return this.inherited(arguments);
         },
         updateStaticElements: function(coords) {
             this.inherited(arguments);
