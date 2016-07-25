@@ -45,7 +45,7 @@ In trackList.json format
         }
     }
 
-
+See test subdirectory for example, you can use http://localhost/jbrowse/?data=plugins/MultiVariantViewer/test to see
 
 ## Screenshot
 
