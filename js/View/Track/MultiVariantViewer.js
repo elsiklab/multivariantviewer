@@ -2,7 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/array',
     'dojo/_base/lang',
-    'JBrowse/View/Track/CanvasVariants',
+    'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
     'dijit/Tooltip',
     'dojo/Deferred'
@@ -11,12 +11,12 @@ function(
     declare,
     array,
     lang,
-    CanvasVariants,
+    CanvasFeatures,
     Util,
     Tooltip,
     Deferred
 ) {
-    return declare(CanvasVariants, {
+    return declare(CanvasFeatures, {
         constructor: function() {
             this.colors = {};
             array.forEach(this.config.labelColors, function(elt) {
@@ -54,6 +54,7 @@ function(
 
         makeTrackLabel: function() {
             var thisB = this;
+
             this.promiseHeight.then(function(genotypes) {
                 if (thisB.config.showLabels || thisB.config.showTooltips) {
                     thisB.sublabels = array.map(genotypes, function(key) {
