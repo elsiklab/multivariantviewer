@@ -12,5 +12,6 @@
     }
   ],
   "formatVersion": 1,
-  "plugins": ["MultiVariantViewer"]
+  "plugins": ["MultiVariantViewer"],
+  "highResolutionMode": 2
 }
