@@ -29,7 +29,15 @@ function(
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
                 style: {
-                    color: function(feat, gt, gtFull) { return gt == 'ref' ? 'blue' : 'orange'; },
+                    color: function(feat, gt, gtString) {
+                        if(gt === 'ref') {
+                            return '#ccc';
+                        }
+                        else if( ! /^1([\|\/]1)*$/.test( gtString ) && ! /^0([\|\/]0)*$/.test( gtString ) ) {
+                            return 'cyan';
+                        }
+                        return 'blue';
+                    },
                     height: 5
                 }
             });
