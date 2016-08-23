@@ -5,7 +5,8 @@ define([
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
     'dijit/Tooltip',
-    'dojo/Deferred'
+    'dojo/Deferred',
+    'MultiVariantViewer/View/Dialog/VariantViewer'
 ],
 function(
     declare,
@@ -14,7 +15,8 @@ function(
     CanvasFeatures,
     Util,
     Tooltip,
-    Deferred
+    Deferred,
+    VariantDialog
 ) {
     return declare(CanvasFeatures, {
         constructor: function() {
@@ -30,10 +32,9 @@ function(
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
                 style: {
                     color: function(feat, gt, gtString) {
-                        if(gt === 'ref') {
+                        if (gt === 'ref') {
                             return '#ccc';
-                        }
-                        else if( ! /^1([\|\/]1)*$/.test( gtString ) && ! /^0([\|\/]0)*$/.test( gtString ) ) {
+                        } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
                             return 'cyan';
                         }
                         return 'blue';
@@ -66,13 +67,14 @@ function(
             this.promiseHeight.then(function(genotypes) {
                 if (thisB.config.showLabels || thisB.config.showTooltips) {
                     thisB.sublabels = array.map(genotypes, function(key) {
+                        var width = thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null;
                         var elt = dojo.create('div', {
                             className: 'varianttrack-sublabel',
                             id: key,
                             style: {
                                 position: 'absolute',
                                 height: thisB.config.style.height - 1 + 'px',
-                                width: thisB.config.showLabels ? (thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null) : '10px',
+                                width: thisB.config.showLabels ? width : '10px',
                                 font: thisB.config.labelFont,
                                 backgroundColor: thisB.colors[key],
                                 zIndex: 18 // same as main track label
@@ -88,7 +90,15 @@ function(
                     });
                 }
             });
-            return this.inherited(arguments);
+            var opts = this.inherited(arguments);
+            opts.push({
+                label: 'MultiVariantViewer',
+                title: 'View variants',
+                onClick: function() {
+                    new VariantDialog({ browser: thisB.browser }).show();
+                }
+            });
+            return opts;
         },
         updateStaticElements: function(coords) {
             this.inherited(arguments);
