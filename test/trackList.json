@@ -1,17 +1,23 @@
 {
-  "tracks": [
-    {
-      "seqType": "dna",
-      "key": "Reference sequence",
-      "storeClass": "JBrowse/Store/Sequence/StaticChunked",
-      "chunkSize": 20000,
-      "urlTemplate": "seq/{refseq_dirpath}/{refseq}-",
-      "label": "DNA",
-      "type": "SequenceTrack",
-      "category": "Reference sequence"
-    }
-  ],
-  "formatVersion": 1,
-  "plugins": ["MultiVariantViewer"],
-  "highResolutionMode": 2
+   "plugins" : [
+      "MultiVariantViewer"
+   ],
+   "tracks" : [
+      {
+         "seqType" : "dna",
+         "key" : "Reference sequence",
+         "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
+         "chunkSize" : 20000,
+         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-",
+         "label" : "DNA",
+         "type" : "SequenceTrack",
+         "category" : "Reference sequence"
+      }
+   ],
+   "names" : {
+      "url" : "names/",
+      "type" : "Hash"
+   },
+   "highResolutionMode" : 2,
+   "formatVersion" : 1
 }
