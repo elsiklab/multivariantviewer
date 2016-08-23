@@ -90,16 +90,23 @@ function(
                     });
                 }
             });
+
+            this.inherited(arguments);
+        },
+
+        _trackMenuOptions: function() {
             var opts = this.inherited(arguments);
+            var thisB = this;
             opts.push({
                 label: 'MultiVariantViewer',
                 title: 'View variants',
                 onClick: function() {
-                    new VariantDialog({ browser: thisB.browser }).show();
+                    new VariantDialog().show({ browser: thisB.browser, track: thisB });
                 }
             });
             return opts;
         },
+
         updateStaticElements: function(coords) {
             this.inherited(arguments);
             if (this.sublabels && 'x' in coords) {
