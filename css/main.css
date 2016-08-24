@@ -1,8 +1,14 @@
 div.varianttrack-sublabel {
-    z-index: 10;
+    z-index: 18;
     overflow: hidden;
     cursor: pointer;
-    border: 0.1px solid #999;
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+    border-top: 1px solid #999;
     color: #111;
     font-weight: bold;
+}
+
+div.varianttrack-sublabel.last {
+    border-bottom: 1px solid #999;
 }

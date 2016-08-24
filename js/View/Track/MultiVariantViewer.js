@@ -66,7 +66,8 @@ function(
 
             this.promiseHeight.then(function(genotypes) {
                 if (thisB.config.showLabels || thisB.config.showTooltips) {
-                    thisB.sublabels = array.map(genotypes, function(key) {
+                    thisB.sublabels = array.map(genotypes, function(pkey) {
+                        var key = pkey.trim()
                         var width = thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null;
                         var elt = dojo.create('div', {
                             className: 'varianttrack-sublabel',
@@ -76,8 +77,7 @@ function(
                                 height: thisB.config.style.height - 1 + 'px',
                                 width: thisB.config.showLabels ? width : '10px',
                                 font: thisB.config.labelFont,
-                                backgroundColor: thisB.colors[key],
-                                zIndex: 18 // same as main track label
+                                backgroundColor: thisB.colors[key]
                             },
                             innerHTML: thisB.config.showLabels ? key : ''
                         }, thisB.div);
@@ -111,9 +111,13 @@ function(
             this.inherited(arguments);
             if (this.sublabels && 'x' in coords) {
                 var height = this.config.style.height + (this.config.style.offset || 0);
+                var len = this.sublabels.length;
                 array.forEach(this.sublabels, function(sublabel, i) {
                     sublabel.style.left = coords.x + 'px';
                     sublabel.style.top = i * height + 'px';
+                    if(i == len-1) {
+                        dojo.addClass(sublabel, "last");
+                    }
                 });
             }
         }
