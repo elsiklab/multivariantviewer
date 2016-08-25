@@ -33,7 +33,7 @@ function(
                 style: {
                     color: function(feat, gt, gtString) {
                         if (gt === 'ref') {
-                            return '#ccc';
+                            return '#aaa';
                         } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
                             return 'cyan';
                         }
