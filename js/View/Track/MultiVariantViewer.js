@@ -19,15 +19,13 @@ function(
     VariantDialog
 ) {
     return declare(CanvasFeatures, {
-        constructor: function() {
-            this.colors = {};
-            this.descriptions = {};
-            array.forEach(this.config.labels, function(elt) {
-                this.colors[elt.name] = elt.color;
-                this.descriptions[elt.name] = elt.description;
-            }, this);
-
-            this.promiseHeight = new Deferred();
+        constructor: function(args) {
+            this.labels = {};
+            if(this.config.sublabels) {
+                this.config.sublabels.forEach(function(elt) {
+                    this.labels[elt.name] = elt;
+                }, this);
+            }
         },
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
@@ -52,12 +50,9 @@ function(
             var layout = this.inherited(arguments);
             return declare.safeMixin(layout, {
                 addRect: function(id, left, right, height, data) {
-                    this.pTotalHeight = Object.keys(data.get('genotypes')).length / 4 * thisB.config.style.height;
-                    if (!thisB.promiseHeight.isResolved()) {
-                        var ret = data.get('genotypes');
-                        delete ret.toString;
-                        thisB.promiseHeight.resolve(Object.keys(ret));
-                    }
+                    var ret = data.get('genotypes');
+                    delete ret.toString;
+                    this.pTotalHeight = Object.keys(ret).length / 4 * thisB.config.style.height;
                     return this.pTotalHeight;
                 }
             });
@@ -65,33 +60,35 @@ function(
 
         makeTrackLabel: function() {
             var thisB = this;
+            var c = this.config;
 
-            this.promiseHeight.then(function(genotypes) {
-                if (thisB.config.showLabels || thisB.config.showTooltips) {
-                    thisB.sublabels = array.map(genotypes, function(pkey) {
-                        var key = pkey.trim();
-                        var width = thisB.config.labelWidth ? thisB.config.labelWidth + 'px' : null;
-                        var elt = dojo.create('div', {
+            if (c.showLabels || c.showTooltips) {
+                this.store.getVCFHeader().then(function(header) {
+                    thisB.sublabels = array.map(header.samples, function(sample) {
+                        var key = sample.trim();
+                        var elt = thisB.labels[key];
+                        var width = c.labelWidth ? c.labelWidth + 'px' : null;
+                        var htmlnode = dojo.create('div', {
                             className: 'varianttrack-sublabel',
                             id: key,
                             style: {
                                 position: 'absolute',
-                                height: thisB.config.style.height - 1 + 'px',
-                                width: thisB.config.showLabels ? width : '10px',
-                                font: thisB.config.labelFont,
-                                backgroundColor: thisB.colors[key]
+                                height: c.style.height - 1 + 'px',
+                                width: c.showLabels ? width : '10px',
+                                font: c.labelFont,
+                                backgroundColor: elt.color
                             },
-                            innerHTML: thisB.config.showLabels ? key : ''
+                            innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
-                        elt.tooltip = new Tooltip({
+                        htmlnode.tooltip = new Tooltip({
                             connectId: key,
-                            label: key + '<br />' + thisB.descriptions[key] || '',
+                            label: key + '<br />' + (elt.description || ''),
                             showDelay: 0
                         });
-                        return elt;
+                        return htmlnode;
                     });
-                }
-            });
+                });
+            }
 
             this.inherited(arguments);
         },

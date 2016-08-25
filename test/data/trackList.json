@@ -19,5 +19,7 @@
       "type" : "Hash"
    },
    "highResolutionMode" : 2,
-   "formatVersion" : 1
+   "formatVersion" : 1,
+   "classicMenu": true,
+   "include": ["variants.json"]
 }

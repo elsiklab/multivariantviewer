@@ -1,21 +1,22 @@
 # multivariantviewer
 
-A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file (VCF with multiple individuals)
+A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file (VCF with multiple samples)
 
 ## Options
 
-* style->height - Pixel height of each individual. Default: 5
-* style->offset - Pixel offset between individuals. Default: 0
-* style->color - A color or a callback that returns colors. The callback signature is `function(feature, string ['ref' or 'alt'], genotype [the actual genotype as 0|0 or 0|1 or similar])`
+* style->height - Pixel height for each sample. Default: 5
+* style->offset - Pixel offset between each sample. Default: 0
+* style->color - A color or a callback that returns colors. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
 
 Subtrack label options
 
-* showLabels - Display actual labels inside the small icons specified by showTooltips (boolean)
-* showTooltips - Display squares with a mouseover tooltips with subtrack label (boolean)
+* showLabels - Display subtrack labels (boolean)
+* showTooltips - Display mouseover tooltips with subtrack name and description (boolean)
 * labelFont - Specify subtrack label font CSS e.g. "6px sans-serif"
-* labelWidth - Specify a specific width for all subtrack labels
-* labelColors - An array of structures like {"name": "sample1", "color": "red"}
+* labelWidth - Specify a specific width for all subtrack labels. Default autosizes to each sublabel's length, which can look ugly
+* sublabels - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover"}
 
+The sublabels are optional and default to just showing the sample names if not specified
 
 ## Example configuration
 
@@ -29,8 +30,8 @@ In tracks.conf format
     showLabels=true
     labelFont=4px sans-serif
     style.height=10
-    labelColors+=json:{"name": "sample1", "color": "blue"}
-    labelColors+=json:{"name": "sample2", "color": "red"}
+    sublabels+=json:{"name": "sample1", "color": "blue", "description": "mouseover description"}
+    sublabels+=json:{"name": "sample2", "color": "red", "description": "mouseover description"}
 
 In trackList.json format
 
@@ -40,12 +41,16 @@ In trackList.json format
         "label": "Variant track",
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
         "style": {
-            "height":1,
-            "color": "function(feat,gt,fullgt) { return gt=='ref'? 'blue': 'orange'; }"
+            "height": 1,
+            "color": "function(feat, gt) { return gt == 'ref'? 'blue': 'orange'; }"
         }
     }
 
-See test subdirectory for example, you can use http://localhost/jbrowse/?data=plugins/MultiVariantViewer/test to see
+## Sample
+
+See test subdirectory for example, you can use http://localhost/jbrowse/?data=plugins/MultiVariantViewer/test/data to see the sample data
+
+
 
 ## Screenshot
 
@@ -55,7 +60,7 @@ Shows 1000genomes VCF data
 
 ## Installation
 
-Clone the repo to your plugins directory and name it VariantTrack
+Clone the repo to your plugins directory and name it MultiVariantViewer
 
     git clone https://github.com/cmdcolin/multivariantviewer MultiVariantViewer
 
@@ -65,3 +70,9 @@ Then add it to your jbrowse config
     
 See http://gmod.org/wiki/JBrowse_FAQ#How_do_I_install_a_plugin for more details
 
+
+## Notes
+
+The configuration in test/tracks.conf becomes slow for thousands of VCF samples. It takes about 7 seconds to parse the 1kg data test/tracks.conf.
+
+If the track becomes too tall, it breaks the absolute limit that the browser allows for a HTML5 canvas. The 1kg data in test/tracks.conf presses this limit
