@@ -16,8 +16,8 @@ app.get('/', function(req, res) {
     var start = Math.round(req.query.start);
     var end = Math.round(req.query.end);
     var tabix = req.query.url;
+    console.log(req.query);
     var fs = require('fs');
-    var file = fs.createWriteStream('myOutput.txt');
     var proc = spawn('tabix', ['-p', 'vcf', '-h', tabix, ref + ':' + start + '-' + end]);
 
     proc.stderr.on('data', function(data) {
@@ -29,13 +29,18 @@ app.get('/', function(req, res) {
         terminal: false
     });
 
+    var snps = [];
+
     lineReader.on('line', function (line) {
         var ret = line.toString('utf8');
-        console.log(ret);
         if(ret[0] != '#') {
             var id = ret.split('\t')[2];
-            console.log(id);
+            snps.push(id);
         }
+    });
+
+    lineReader.on('end', function () {
+        fs.writeFileSync('rsids.txt', snps.join('\n'));
     });
     res.send('Hello World!');
 });
