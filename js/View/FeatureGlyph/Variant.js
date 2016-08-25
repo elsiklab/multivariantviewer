@@ -29,7 +29,7 @@ function(
                     var valueParse = genotypes[key].GT.values[0];
                     var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                     var split = valueParse.split(splitter);
-                    if ((split[0] !== 0   || split[1] !== 0) && (split[0] !== '.' || split[1] !== '.')) {
+                    if ((split[0] != 0   || split[1] != 0) && (split[0] != '.' || split[1] != '.')) {
                         col = color(fRect.f, 'alt', valueParse);
                     } else {
                         col = color(fRect.f, 'ref', valueParse);
