@@ -14062,6 +14062,17 @@
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "JBrowse/View/Track/CanvasVariants"
+    },
+    {
+      "label": "volvox_multivcf_test_without_conf",
+      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+      "urlTemplate": "volvox.test.vcf.gz",
+      "type": "MultiVariantViewer/View/Track/MultiVariantViewer",
+      "showLabels": true,
+      "showTooltips": true,
+      "style": {
+        "height": 12
+      }
     }
   ]
 }

@@ -66,7 +66,7 @@ function(
                 this.store.getVCFHeader().then(function(header) {
                     thisB.sublabels = array.map(header.samples, function(sample) {
                         var key = sample.trim();
-                        var elt = thisB.labels[key];
+                        var elt = thisB.labels[key] || {};
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
                         var htmlnode = dojo.create('div', {
                             className: 'varianttrack-sublabel',
