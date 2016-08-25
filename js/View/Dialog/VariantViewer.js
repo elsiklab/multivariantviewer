@@ -23,7 +23,7 @@ function(
             var h = 2300;
 
             var ret = dojo.create('div', { className: 'canvascontainer' }, this.container);
-            var c = dojo.create('canvas', { width: w*2, height: h*2, style: { width: w+'px', height: h+'px' } }, ret);
+            var c = dojo.create('canvas', { width: w * 2, height: h * 2, style: { width: w + 'px', height: h + 'px' } }, ret);
             var ctx = c.getContext('2d');
             var feats = [];
             var color = lang.hitch(this, 'getColor');
@@ -35,12 +35,12 @@ function(
                 feats.push(f);
             }, function() {
                 var l = w / feats.length;
-                ctx.fillStyle="#FF0000";
+                ctx.fillStyle = '#FF0000';
                 for (var i = 0; i < feats.length; i++) {
                     var genotypes = feats[i].get('genotypes');
                     delete genotypes.toString;
                     var k = h / Object.keys(genotypes).length;
-                    Object.keys(genotypes).forEach(function(f,j) {
+                    Object.keys(genotypes).forEach(function(f, j) {
                         if (genotypes[f].GT) {
                             var valueParse = genotypes[f].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
@@ -49,11 +49,11 @@ function(
                                 ctx.fillStyle = color(track, feats[i], 'alt', valueParse);
                             } else {
                                 ctx.fillStyle = color(track, feats[i], 'ref', valueParse);
-                            }   
+                            }
                         } else {
                             ctx.fillStyle = color(track, feats[i], 'ref');
                         }
-                        ctx.fillRect(i * l, j * k, l+0.5, k+0.5);
+                        ctx.fillRect(i * l, j * k, l + 0.5, k + 0.5);
                     });
                 }
             }, function(error) {

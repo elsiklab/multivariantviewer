@@ -21,7 +21,7 @@ function(
     return declare(CanvasFeatures, {
         constructor: function(args) {
             this.labels = {};
-            if(this.config.sublabels) {
+            if (this.config.sublabels) {
                 this.config.sublabels.forEach(function(elt) {
                     this.labels[elt.name] = elt;
                 }, this);
