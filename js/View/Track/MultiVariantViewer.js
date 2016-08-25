@@ -21,8 +21,10 @@ function(
     return declare(CanvasFeatures, {
         constructor: function() {
             this.colors = {};
-            array.forEach(this.config.labelColors, function(elt) {
+            this.descriptions = {};
+            array.forEach(this.config.labels, function(elt) {
                 this.colors[elt.name] = elt.color;
+                this.descriptions[elt.name] = elt.description;
             }, this);
 
             this.promiseHeight = new Deferred();
@@ -83,7 +85,7 @@ function(
                         }, thisB.div);
                         elt.tooltip = new Tooltip({
                             connectId: key,
-                            label: key,
+                            label: key + '<br />' + thisB.descriptions[key] || '',
                             showDelay: 0
                         });
                         return elt;
