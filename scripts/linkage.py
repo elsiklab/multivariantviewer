@@ -32,13 +32,13 @@ def gen_ld(vcf, ld_snp):
             fhrs.write("%s\n" % toks[2])
             j += 1
         print >>sys.stderr, j, "SNPs"
-    cmd = "|plink2 --vcf %s --r2 --ld-window-kb 10000 --ld-window 99999 --ld-window-r2 0"
+    cmd = "|plink2 --vcf %s --ld-window-r2 0"
     cmd += " --out %s "
     if ld_snp is None:
-        cmd += " --inter-chr --ld-snp-list %s"
+        cmd += " --r2 inter-chr --ld-snp-list %s"
         cmd %= (vcf, out, rs_list)
     else:
-        cmd += "--ld-snp %s "
+        cmd += "--r2 --ld-snp %s "
         cmd %= (vcf, out, ld_snp)
     list(nopen(cmd))
     return out + ".ld"
@@ -47,7 +47,7 @@ def gen_ld(vcf, ld_snp):
 def pull_vcf(chrom, region):
     print >>sys.stderr, "downloading with tabix"
     tmpvcf = tempfile.mktemp(suffix=".vcf")
-    cmd = "|tabix -p vcf -h ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20110521/ALL.%s.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz %s > %s" \
+    cmd = "|tabix -p vcf -h ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.%s.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz %s > %s" \
             % (chrom, region, tmpvcf)
     list(nopen(cmd))
     return tmpvcf
