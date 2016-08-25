@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "readline-stream": "^1.0.1",
+    "tmp": "0.0.28",
+    "tmp-promise": "^1.0.2"
   }
 }

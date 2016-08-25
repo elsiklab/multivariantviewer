@@ -6,7 +6,8 @@ define([
     'JBrowse/Util',
     'dijit/Tooltip',
     'dojo/Deferred',
-    'MultiVariantViewer/View/Dialog/VariantViewer'
+    'MultiVariantViewer/View/Dialog/VariantViewer',
+    'MultiVariantViewer/View/Dialog/LDViewer'
 ],
 function(
     declare,
@@ -16,7 +17,8 @@ function(
     Util,
     Tooltip,
     Deferred,
-    VariantDialog
+    VariantDialog,
+    LDDialog
 ) {
     return declare(CanvasFeatures, {
         constructor: function(args) {
@@ -30,6 +32,7 @@ function(
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
+                ldviewer: 'http://localhost:4730/',
                 style: {
                     color: function(feat, gt, gtString) {
                         if (gt === 'ref') {
@@ -96,11 +99,18 @@ function(
         _trackMenuOptions: function() {
             var opts = this.inherited(arguments);
             var thisB = this;
+            var c = this.config;
             opts.push({
-                label: 'MultiVariantViewer',
-                title: 'View variants',
+                label: 'View variant matrix',
                 onClick: function() {
                     new VariantDialog().show({ browser: thisB.browser, track: thisB });
+                }
+            });
+            opts.push({
+                label: 'View LD plot',
+                onClick: function() {
+                    console.log(c.baseUrl + c.urlTemplate);
+                    new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });
                 }
             });
             return opts;
