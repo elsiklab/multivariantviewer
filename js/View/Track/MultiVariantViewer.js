@@ -28,6 +28,7 @@ function(
                     this.labels[elt.name] = elt;
                 }, this);
             }
+            new LDDialog().show({ browser: this.browser, track: this, ldviewer: this.config.ldviewer, url: this.config.baseUrl + this.config.urlTemplate });
         },
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
