@@ -23,14 +23,9 @@ function(
             var track = args.track;
             var browser = args.browser;
             var region = browser.view.visibleRegion();
-            var w = 800;
-            var h = 2300;
             var ref = 'chr';
-
-            var ret = dojo.create('div', { className: 'canvascontainer' }, this.container);
-            var c = dojo.create('canvas', { width: w * 2, height: h * 2, style: { width: w + 'px', height: h + 'px' } }, ret);
-            var ctx = c.getContext('2d');
-            ctx.scale(2, 2);
+            var thisB = this;
+            var c = dojo.create('canvas', { className: 'canvasld' }, this.container);
             var snps = [];
             var matrix = {};
 
@@ -56,6 +51,16 @@ function(
                                 }
                                 matrix[r[2]][r[5]] = +r[6];
                             });
+
+                            var w = snps.length * 20 + 200;
+                            var h = snps.length * 10 + 200;
+                            c.width = w * 2;
+                            c.height = h * 2;
+                            c.style.width = w + 'px';
+                            c.style.height = h + 'px';
+                            var ctx = c.getContext('2d');
+                            ctx.scale(2, 2);
+                            thisB.resize();
                             for (var i = 0; i < snps.length; i++) {
                                 var snp = snps[i];
                                 ctx.save();
@@ -73,7 +78,7 @@ function(
                                 for (var j = i; j < snps.length; j++) {
                                     var snp_j = snps[j];
                                     ctx.fillStyle = 'hsl(0,80%,' + (90 - matrix[snp_i][snp_j] * 50) + '%)';
-                                    ctx.fillRect(i * 14.14,j * 14.14, 14.14, 14.14);
+                                    ctx.fillRect(i * 14.14, j * 14.14, 14.14, 14.14);
                                     ctx.fill();
                                 }
                             }
@@ -89,9 +94,8 @@ function(
                 console.error('error', error);
             });
 
-            this.set('content', ret);
+            this.set('content', c);
             this.inherited(arguments);
         }
-
     });
 });

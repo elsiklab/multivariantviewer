@@ -28,7 +28,6 @@ function(
                     this.labels[elt.name] = elt;
                 }, this);
             }
-            new LDDialog().show({ browser: this.browser, track: this, ldviewer: this.config.ldviewer, url: this.config.baseUrl + this.config.urlTemplate });
         },
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
@@ -108,7 +107,7 @@ function(
                 }
             });
             opts.push({
-                label: 'View LD plot',
+                label: 'View variant LD',
                 onClick: function() {
                     console.log(c.baseUrl + c.urlTemplate);
                     new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });

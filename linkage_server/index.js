@@ -4,6 +4,9 @@ var fs = require('fs');
 var child = require('child_process');  
 var app = express();
 
+// turn on for console logging
+var debug = 0;
+
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -44,7 +47,9 @@ app.get('/', function(req, res) {
         var rsids = tmp.tmpNameSync({ prefix: 'rsid' });
         fs.writeFileSync(rsids, snps.filter(function(elt) { return elt!='.'; }).join('\n'));
         var outputname = tmp.tmpNameSync({ prefix: 'plink' });
-        console.log(rsids,outputname,vcfname)
+        if(debug) {
+            console.log(rsids, outputname, vcfname);
+        }
         var plink = child.spawnSync('plink2', ['--vcf', vcfname, '--ld-window-r2', '0', '--r2', '--ld-snp-list', rsids, '--out', outputname, '--allow-extra-chr']);
         res.send(fs.readFileSync(outputname + '.ld'));
     });

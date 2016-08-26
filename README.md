@@ -58,6 +58,16 @@ See test subdirectory for example, you can use http://localhost/jbrowse/?data=pl
 
 Shows 1000genomes VCF data
 
+![](img/matrix.png)
+
+Displays matrix of variants
+
+
+![](img/ld.png)
+
+Shows LD
+
+
 ## Installation
 
 Clone the repo to your plugins directory and name it MultiVariantViewer
@@ -70,6 +80,13 @@ Then add it to your jbrowse config
     
 See http://gmod.org/wiki/JBrowse_FAQ#How_do_I_install_a_plugin for more details
 
+### Install LD server
+
+Optionally, LD can be calculated from plink on the server and rendered
+
+    node linkage_server/index.js
+
+The LD server additionally requires tabix and plink2 aka plink 1.9 to be installed. You may also use a node.js taskrunner like forever or pm2
 
 ## Notes
 
