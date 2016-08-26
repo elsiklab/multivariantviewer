@@ -106,13 +106,16 @@ function(
                     new VariantDialog().show({ browser: thisB.browser, track: thisB });
                 }
             });
-            opts.push({
-                label: 'View variant LD',
-                onClick: function() {
-                    console.log(c.baseUrl + c.urlTemplate);
-                    new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });
-                }
-            });
+
+            if(c.useLDViewer) {
+                opts.push({
+                    label: 'View variant LD',
+                    onClick: function() {
+                        console.log(c.baseUrl + c.urlTemplate);
+                        new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });
+                    }
+                });
+            }
             return opts;
         },
 

@@ -4,6 +4,7 @@
       "label": "volvox_multivcf_test",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
+      "useLDViewer": true,
       "type": "MultiVariantViewer/View/Track/MultiVariantViewer",
       "showLabels": true,
       "showTooltips": true,

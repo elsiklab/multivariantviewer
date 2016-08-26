@@ -25,7 +25,9 @@ function(
             var region = browser.view.visibleRegion();
             var ref = 'chr';
             var thisB = this;
-            var c = dojo.create('canvas', { className: 'canvasld' }, this.container);
+            var div = dojo.create('div', { className: 'containerld' }, this.container);
+            var c = dojo.create('canvas', { className: 'canvasld' }, div);
+            var p = dojo.create('p', { className: 'errorld' }, div);
             var snps = [];
             var matrix = {};
 
@@ -83,7 +85,8 @@ function(
                                 }
                             }
                         }, function(error) {
-                            console.error('error', error);
+                            console.error('error', error.message);
+                            p.innerHTML = error.message;
                         });
                     },
                     function(error) {
@@ -94,7 +97,7 @@ function(
                 console.error('error', error);
             });
 
-            this.set('content', c);
+            this.set('content', div);
             this.inherited(arguments);
         }
     });

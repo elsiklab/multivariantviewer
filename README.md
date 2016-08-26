@@ -7,6 +7,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 * style->height - Pixel height for each sample. Default: 5
 * style->offset - Pixel offset between each sample. Default: 0
 * style->color - A color or a callback that returns colors. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
+* useLDViewer - Add option to track menu to view LD, requires running the linkage_server (described below)
 
 Subtrack label options
 
@@ -68,7 +69,7 @@ Displays matrix of variants
 Shows LD
 
 
-## Installation
+## Install plugin
 
 Clone the repo to your plugins directory and name it MultiVariantViewer
 
@@ -80,16 +81,27 @@ Then add it to your jbrowse config
     
 See http://gmod.org/wiki/JBrowse_FAQ#How_do_I_install_a_plugin for more details
 
-### Install LD server
+## linkage_server
 
-Optionally, LD can be calculated from plink on the server and rendered
+Optionally, LD can be calculated from the VCF files on the server side using plink and rendered as a classic block view.
+
+### Pre-requisites linkage_server
+
+* tabix
+* plink2 aka plink 1.9
+
+### Install linkage_server
+
+    npm install
+
+### Run linkage_server
 
     node linkage_server/index.js
 
-The LD server additionally requires tabix and plink2 aka plink 1.9 to be installed. You may also use a node.js taskrunner like forever or pm2
+You might also find it useful to use a node.js taskrunner like forever or pm2
 
 ## Notes
 
-The configuration in test/tracks.conf becomes slow for thousands of VCF samples. It takes about 7 seconds to parse the 1kg data test/tracks.conf.
+Large configurations in test/tracks.conf become slow for thousands of VCF samples. It takes about 7 seconds to parse the 1kg data test/tracks.conf so we put it in test/trackList.json
 
 If the track becomes too tall, it breaks the absolute limit that the browser allows for a HTML5 canvas. The 1kg data in test/tracks.conf presses this limit

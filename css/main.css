@@ -12,3 +12,7 @@ div.varianttrack-sublabel {
 div.varianttrack-sublabel.last {
     border-bottom: 1px solid #999;
 }
+
+p.errorld {
+    color: red;
+}
