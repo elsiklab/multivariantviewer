@@ -28,6 +28,7 @@ function(
             var div = dojo.create('div', { className: 'containerld' }, this.container);
             var c = dojo.create('canvas', { className: 'canvasld' }, div);
             var p = dojo.create('p', { className: 'errorld' }, div);
+            dojo.style(this.containerNode, "overflow", "auto");
             var snps = [];
             var matrix = {};
 
@@ -63,6 +64,7 @@ function(
                             var ctx = c.getContext('2d');
                             ctx.scale(2, 2);
                             thisB.resize();
+                            thisB._position();
                             for (var i = 0; i < snps.length; i++) {
                                 var snp = snps[i];
                                 ctx.save();
