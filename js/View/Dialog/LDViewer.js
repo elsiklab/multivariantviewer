@@ -33,24 +33,28 @@ function(
             var feats = [];
             var color = lang.hitch(this, 'getColor');
             ctx.scale(2, 2);
+
+            // find actual refseq name in VCF file, for ex in volvox it's contigA instead of ctgA
             track.store.getVCFHeader().then(function () {
                 track.store.indexedData.getLines(
                     region.ref,
                     region.start,
                     region.end,
                     function( line ) { 
-                        ref = line._regularizedRef;
+                        ref = line.ref;
                     },  
                     function() {
-                        request(args.ldviewer + '?' + ioQuery.ioQuery.objectToQuery({ ref: ref, start: region.start, end: region.end, url: args.url }), function(ret) {
+                        request(args.ldviewer + '?' + ioQuery.objectToQuery({ ref: ref, start: region.start, end: region.end, url: args.url }), function(ret) {
                             console.log(ret)
                         });
                     },
                     function(error) {
-                        console.log('error', error);
+                        console.error('error', error);
                     }
                 );  
-            }, errorCallback );
+            }, function(error) {
+                console.error('error', error);
+            });
 
             this.set('content', ret);
             this.inherited(arguments);
