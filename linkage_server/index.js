@@ -7,7 +7,7 @@ var app = express();
 // turn on for console logging
 var debug = 0;
 var deleteFiles = 1;
-var plink = 'plink2';
+var plink = 'plink';
 
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -52,15 +52,17 @@ app.get('/', function(req, res) {
         if(debug) {
             console.log(rsids, outputname, vcfname);
         }
-        var plink = require('child_process').exec(plink + ' --vcf '+vcfname+' --ld-window-r2 0 --r2 --ld-snp-list '+rsids+' --out '+outputname+' --allow-extra-chr');
-        plink.stdout.pipe(process.stdout)
-        plink.stderr.pipe(process.stdout)
-        plink.on('exit', function() {
+        var p = require('child_process').exec(plink + ' --vcf '+vcfname+' --ld-window-r2 0 --r2 --ld-snp-list '+rsids+' --out '+outputname+' --allow-extra-chr');
+        p.stdout.pipe(process.stdout)
+        p.stderr.pipe(process.stdout)
+        p.on('exit', function() {
             res.send(fs.readFileSync(outputname + '.ld'));
             if(deleteFiles) {
                 fs.unlinkSync(rsids);
                 fs.unlinkSync(vcfname);
-                fs.unlinkSync(outputname);
+                fs.unlinkSync(outputname+'.nosex');
+                fs.unlinkSync(outputname+'.log');
+                fs.unlinkSync(outputname+'.ld');
             }
         });
     });
