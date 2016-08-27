@@ -26,8 +26,8 @@ function(
             var ref;
             var thisB = this;
             var div = dojo.create('div', { className: 'containerld' }, this.container);
-            var c = dojo.create('canvas', { className: 'canvasld' }, div);
             var p = dojo.create('p', { className: 'errorld' }, div);
+            var c = dojo.create('canvas', { className: 'canvasld' }, div);
             dojo.style(this.containerNode, 'overflow', 'auto');
 
 
@@ -48,60 +48,10 @@ function(
                             url: args.url
                         };
                         request(args.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
-                            var i = 0;
-                            var j = 0;
-                            var k = 0;
-                            var line;
-                            var snps = [];
-                            var lines = res.split('\n');
-                            while (lines[j] !== 'break' && j < lines.length) {
-                                line = lines[j++].trim();
-                                if (line !== '') {
-                                    snps.push(line);
-                                }
-                            }
-                            j++; // skip 'break' line
-
-                            // resize dialog canvas
-                            var w = snps.length * 20 + 200;
-                            var h = snps.length * 10 + 200;
-                            c.width = w * 2;
-                            c.height = h * 2;
-                            c.style.width = w + 'px';
-                            c.style.height = h + 'px';
-                            var ctx = c.getContext('2d');
-                            ctx.scale(2, 2);
-                            thisB.resize();
-                            thisB._position();
-
-                            // render snp names
-                            for (i = 0; i < snps.length; i++) {
-                                var snp = snps[i];
-                                ctx.save();
-                                ctx.translate(50 + i * 20, 50);
-                                ctx.rotate(-Math.PI / 4);
-                                ctx.textAlign = 'left';
-                                ctx.fillText(snp, 0, 0);
-                                ctx.restore();
-                            }
-
-                            // render triangle rotated
-                            ctx.translate(43, 80);
-                            ctx.rotate(-Math.PI / 4);
-                            while (j < lines.length) {
-                                line = lines[j].trim();
-                                if (line !== '') {
-                                    var scores = line.split('\t');
-                                    for (i = 0; i < scores.length; i++) {
-                                        var score = scores[i];
-                                        ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
-                                        ctx.fillRect(i * 14.14, k * 14.14, 14.14, 14.14);
-                                        ctx.fill();
-                                    }
-                                }
-                                j++;
-                                k++;
-                            }
+                            var r = thisB.parseResults(res);
+                            r.canvas = c;
+                            r.boxw = 18;
+                            thisB.renderBox(r);
                         }, function(error) {
                             console.error('error', error.message);
                             p.innerHTML = error.message;
@@ -117,6 +67,78 @@ function(
 
             this.set('content', div);
             this.inherited(arguments);
+        },
+
+        parseResults: function(res) {
+            var j = 0;
+            var line;
+            var snps = [];
+            var lines = res.split('\n');
+            while (lines[j] !== 'break' && j < lines.length) {
+                line = lines[j++].trim();
+                if (line !== '') {
+                    snps.push(line);
+                }
+            }
+            j++; // skip 'break' line
+            var scores = [];
+            while (j < lines.length) {
+                line = lines[j].trim();
+                if (line !== '') {
+                    var scoreline = line.split('\t');
+                    scores.push(scoreline);
+                }
+                j++;
+            }
+            return {
+                scores: scores,
+                snps: snps
+            };
+        },
+
+        renderBox: function(args) {
+            var c = args.canvas;
+            var snps = args.snps;
+            var scores = args.scores;
+            var boxw = args.boxw;
+            var bw = boxw / Math.sqrt(2);
+            var height = args.height;
+
+            // resize dialog canvas
+            var w = snps.length * boxw + 200;
+            var h = snps.length * boxw + 200;
+            c.width = w * 2;
+            c.height = h * 2;
+            c.style.width = w + 'px';
+            c.style.height = h + 'px';
+            var ctx = c.getContext('2d');
+            ctx.scale(2, 2);
+            this.resize();
+            this._position();
+
+            // render snp names
+            for (var i = 0; i < snps.length; i++) {
+                var snp = snps[i];
+                ctx.save();
+                ctx.translate(50 + i * boxw, 50);
+                ctx.rotate(-Math.PI / 4);
+                ctx.textAlign = 'left';
+                ctx.fillText(snp, 0, 0);
+                ctx.restore();
+            }
+
+            // render triangle rotated
+            ctx.translate(43, 80);
+            ctx.rotate(-Math.PI / 4);
+            for (var j = 0; j < scores.length; j++) {
+                var line = scores[j];
+                for (var i = 0; i < line.length; i++) {
+                    var score = line[i];
+                    ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
+                    ctx.fillRect(i * bw, j * bw, bw, bw);
+                    ctx.fill();
+                }
+            }
         }
     });
 });
