@@ -2,16 +2,20 @@ define([
     'dojo/_base/declare',
     'dojo/_base/array',
     'dojo/_base/lang',
+    'dojo/on',
     'dojo/io-query',
     'dojo/request',
+    'dojo/Deferred',
     'dijit/Dialog'
 ],
 function(
     declare,
     array,
     lang,
+    on,
     ioQuery,
     request,
+    Deferred,
     Dialog
 ) {
     return declare(Dialog, {
@@ -20,20 +24,46 @@ function(
             return track.getConf('style.color', [feature, genotype, genotypeFull]);
         },
         show: function(args) {
-            var track = args.track;
-            var browser = args.browser;
-            var region = browser.view.visibleRegion();
-            var ref;
+            this.track = args.track;
+            this.browser = args.browser;
+            this.boxw = 18;
+            this.drawnames = true;
+
+            var def = new Deferred();
             var thisB = this;
+            var ref;
+
+
             var div = dojo.create('div', { className: 'containerld' }, this.container);
+            var input = dojo.create('input', { id: 'numberinput', type: 'number', value: 18 }, div);
+            dojo.create('label', { for: 'numberinput', innerHTML: 'Box size' }, div);
+            var checkbox = dojo.create('input', { id: 'drawnames', type: 'checkbox', checked: 'checked' }, div);
+            dojo.create('label', { for: 'drawnames', innerHTML: 'Draw names' }, div);
+            dojo.create('br');
+            this.canvas = dojo.create('canvas', { className: 'canvasld' }, div);
+
+            on(input, 'change', function() {
+                thisB.boxw = input.value;
+                def.then(function() {
+                    thisB.renderBox();
+                });
+            });
+            on(checkbox, 'change', function() {
+                thisB.drawnames = checkbox.checked;
+                def.then(function() {
+                    thisB.renderBox();
+                });
+            });
             var p = dojo.create('p', { className: 'errorld' }, div);
-            var c = dojo.create('canvas', { className: 'canvasld' }, div);
             dojo.style(this.containerNode, 'overflow', 'auto');
 
 
+
+
             // find actual refseq name in VCF file, for ex in volvox it's contigA instead of ctgA
-            track.store.getVCFHeader().then(function() {
-                track.store.indexedData.getLines(
+            var region = this.browser.view.visibleRegion();
+            this.track.store.getVCFHeader().then(function() {
+                thisB.track.store.indexedData.getLines(
                     region.ref,
                     region.start,
                     region.end,
@@ -48,10 +78,9 @@ function(
                             url: args.url
                         };
                         request(args.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
-                            var r = thisB.parseResults(res);
-                            r.canvas = c;
-                            r.boxw = 18;
-                            thisB.renderBox(r);
+                            def.resolve();
+                            thisB.results = thisB.parseResults(res);
+                            thisB.renderBox();
                         }, function(error) {
                             console.error('error', error.message);
                             p.innerHTML = error.message;
@@ -96,11 +125,11 @@ function(
             };
         },
 
-        renderBox: function(args) {
-            var c = args.canvas;
-            var snps = args.snps;
-            var scores = args.scores;
-            var boxw = args.boxw;
+        renderBox: function() {
+            var c = this.canvas;
+            var snps = this.results.snps;
+            var scores = this.results.scores;
+            var boxw = this.boxw;
             var bw = boxw / Math.sqrt(2);
 
             // resize dialog canvas
@@ -116,14 +145,16 @@ function(
             this._position();
 
             // render snp names
-            for (var i = 0; i < snps.length; i++) {
-                var snp = snps[i];
-                ctx.save();
-                ctx.translate(50 + i * boxw, 50);
-                ctx.rotate(-Math.PI / 4);
-                ctx.textAlign = 'left';
-                ctx.fillText(snp, 0, 0);
-                ctx.restore();
+            if(this.drawnames) {
+                for (var i = 0; i < snps.length; i++) {
+                    var snp = snps[i];
+                    ctx.save();
+                    ctx.translate(50 + i * boxw, 50);
+                    ctx.rotate(-Math.PI / 4);
+                    ctx.textAlign = 'left';
+                    ctx.fillText(snp, 0, 0);
+                    ctx.restore();
+                }
             }
 
             // render triangle rotated

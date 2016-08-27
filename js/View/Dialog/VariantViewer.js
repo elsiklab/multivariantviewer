@@ -28,9 +28,10 @@ function(
             var thisB = this;
             var ret = dojo.create('div', { className: 'canvascontainer' }, this.container);
 
-            if (this.track.labels) {
+            if (this.track.config.sublabels) {
                 dojo.create('label', { for: 'sortcheckbox', innerHTML: 'Sort?' }, ret);
                 var checkbox = dojo.create('input', { id: 'sortcheckbox', type: 'checkbox' }, ret);
+                dojo.create('br', ret);
                 on(checkbox, 'click', function(e) {
                     thisB.drawMatrix(checkbox.checked);
                 });
@@ -81,7 +82,7 @@ function(
             var dx = w / feats.length;
             var dy = h / keys.length;
             ctx.save();
-            if (track.labels) {
+            if (track.config.sublabels) {
                 dx = (w - 15) / feats.length;
                 for (var j = 0; j < keys.length; j++) {
                     var f = keys[j].trim();
