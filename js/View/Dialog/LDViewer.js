@@ -32,6 +32,7 @@ function(
             var snps = [];
             var matrix = {};
 
+
             // find actual refseq name in VCF file, for ex in volvox it's contigA instead of ctgA
             track.store.getVCFHeader().then(function() {
                 track.store.indexedData.getLines(
@@ -40,21 +41,12 @@ function(
                     region.end,
                     function(line) {
                         ref = line.ref;
+                        snps.push(line.fields[2]);
                     },
                     function() {
                         request(args.ldviewer + '?' + ioQuery.objectToQuery({ ref: ref, start: region.start, end: region.end, url: args.url })).then(function(res) {
-                            res.split('\n').slice(1).slice(0, -1).forEach(function(line) {
-                                var l = line.trim();
-                                var r = l.split(/ +/);
-                                if (snps.indexOf(r[2]) == -1) {
-                                    snps.push(r[2]);
-                                }
-                                if (!matrix[r[2]]) {
-                                    matrix[r[2]] = {};
-                                }
-                                matrix[r[2]][r[5]] = +r[6];
-                            });
 
+                            //resize dialog canvas
                             var w = snps.length * 20 + 200;
                             var h = snps.length * 10 + 200;
                             c.width = w * 2;
@@ -65,6 +57,9 @@ function(
                             ctx.scale(2, 2);
                             thisB.resize();
                             thisB._position();
+
+
+                            //render snp names
                             for (var i = 0; i < snps.length; i++) {
                                 var snp = snps[i];
                                 ctx.save();
@@ -75,13 +70,19 @@ function(
                                 ctx.restore();
                             }
 
+                            //render triangle rotated
                             ctx.translate(43, 80);
                             ctx.rotate(-Math.PI / 4);
-                            for (var i = 0; i < snps.length; i++) {
-                                var snp_i = snps[i];
-                                for (var j = i; j < snps.length; j++) {
-                                    var snp_j = snps[j];
-                                    ctx.fillStyle = 'hsl(0,80%,' + (90 - matrix[snp_i][snp_j] * 50) + '%)';
+                            var lines = res.split('\n');
+                            for(var j = 0; j < lines.length; j++) {
+                                var line = lines[j].trim();
+                                if(line === '') {
+                                    return;
+                                }
+                                var scores = line.split('\t');
+                                for (var i = 0; i < scores.length; i++) {
+                                    var score = scores[i];
+                                    ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
                                     ctx.fillRect(i * 14.14, j * 14.14, 14.14, 14.14);
                                     ctx.fill();
                                 }
