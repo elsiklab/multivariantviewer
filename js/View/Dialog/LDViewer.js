@@ -23,14 +23,12 @@ function(
             var track = args.track;
             var browser = args.browser;
             var region = browser.view.visibleRegion();
-            var ref = 'chr';
+            var ref;
             var thisB = this;
             var div = dojo.create('div', { className: 'containerld' }, this.container);
             var c = dojo.create('canvas', { className: 'canvasld' }, div);
             var p = dojo.create('p', { className: 'errorld' }, div);
-            dojo.style(this.containerNode, "overflow", "auto");
-            var snps = [];
-            var matrix = {};
+            dojo.style(this.containerNode, 'overflow', 'auto');
 
 
             // find actual refseq name in VCF file, for ex in volvox it's contigA instead of ctgA
@@ -41,12 +39,30 @@ function(
                     region.end,
                     function(line) {
                         ref = line.ref;
-                        snps.push(line.fields[2]);
                     },
                     function() {
-                        request(args.ldviewer + '?' + ioQuery.objectToQuery({ ref: ref, start: region.start, end: region.end, url: args.url })).then(function(res) {
+                        var query = {
+                            ref: ref,
+                            start: region.start,
+                            end: region.end,
+                            url: args.url
+                        };
+                        request(args.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
+                            var i = 0;
+                            var j = 0;
+                            var k = 0;
+                            var line;
+                            var snps = [];
+                            var lines = res.split('\n');
+                            while (lines[j] !== 'break' && j < lines.length) {
+                                line = lines[j++].trim();
+                                if (line !== '') {
+                                    snps.push(line);
+                                }
+                            }
+                            j++; // skip 'break' line
 
-                            //resize dialog canvas
+                            // resize dialog canvas
                             var w = snps.length * 20 + 200;
                             var h = snps.length * 10 + 200;
                             c.width = w * 2;
@@ -58,9 +74,8 @@ function(
                             thisB.resize();
                             thisB._position();
 
-
-                            //render snp names
-                            for (var i = 0; i < snps.length; i++) {
+                            // render snp names
+                            for (i = 0; i < snps.length; i++) {
                                 var snp = snps[i];
                                 ctx.save();
                                 ctx.translate(50 + i * 20, 50);
@@ -70,22 +85,22 @@ function(
                                 ctx.restore();
                             }
 
-                            //render triangle rotated
+                            // render triangle rotated
                             ctx.translate(43, 80);
                             ctx.rotate(-Math.PI / 4);
-                            var lines = res.split('\n');
-                            for(var j = 0; j < lines.length; j++) {
-                                var line = lines[j].trim();
-                                if(line === '') {
-                                    return;
+                            while (j < lines.length) {
+                                line = lines[j].trim();
+                                if (line !== '') {
+                                    var scores = line.split('\t');
+                                    for (i = 0; i < scores.length; i++) {
+                                        var score = scores[i];
+                                        ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
+                                        ctx.fillRect(i * 14.14, k * 14.14, 14.14, 14.14);
+                                        ctx.fill();
+                                    }
                                 }
-                                var scores = line.split('\t');
-                                for (var i = 0; i < scores.length; i++) {
-                                    var score = scores[i];
-                                    ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
-                                    ctx.fillRect(i * 14.14, j * 14.14, 14.14, 14.14);
-                                    ctx.fill();
-                                }
+                                j++;
+                                k++;
                             }
                         }, function(error) {
                             console.error('error', error.message);
