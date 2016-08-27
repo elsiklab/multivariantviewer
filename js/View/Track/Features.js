@@ -22,7 +22,7 @@ function(
                             return '#aaa';
                         } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
                             return 'cyan';
-                        }   
+                        }
                         return 'blue';
                     }
                 }
