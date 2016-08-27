@@ -5,7 +5,7 @@
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
       "useLDViewer": true,
-      "type": "MultiVariantViewer/View/Track/MultiVariantViewer",
+      "type": "MultiVariantViewer/View/Track/Grid",
       "showLabels": true,
       "showTooltips": true,
       "style": {
@@ -14062,7 +14062,7 @@
       "label": "volvox_multivcf_special_track_menu",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
-      "type": "MultiVariantViewer/View/Track/MultiVariant",
+      "type": "MultiVariantViewer/View/Track/Features",
       "useLDViewer": true,
       "ldviewer": "http://localhost:4730"
     },
@@ -14070,7 +14070,7 @@
       "label": "volvox_multivcf_test_without_conf",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
-      "type": "MultiVariantViewer/View/Track/MultiVariantViewer",
+      "type": "MultiVariantViewer/View/Track/Grid",
       "showLabels": true,
       "showTooltips": true,
       "style": {

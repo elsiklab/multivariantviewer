@@ -7,15 +7,16 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ### Tracktype
  
-* MultiVariantViewer/View/Track/VariantGrid - displays all genotypes, has special track menu
-* MultiVariantViewer/View/Track/Variants - displays variants as normal features, has special track menu
+* MultiVariantViewer/View/Track/Grid - displays all genotypes
+* MultiVariantViewer/View/Track/Features - displays variants as normal features
 
+Each has a special track menu to view a matrix and optionally LD. The normal track type simply adds extra track menu options to a normal CanvasFeatures track.
 
 ### Style options
 
 * style->height - Pixel height for each sample. Default: 5
 * style->offset - Pixel offset between each sample. Default: 0
-* style->matrixColor - A color or a callback that returns colors. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
+* style->matrixColor - A color or a callback that returns colors for both the grid type and the matrix popup. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
 
 ### Subtrack label options
 
@@ -39,7 +40,7 @@ In tracks.conf format
     [tracks.variant]
     urlTemplate=file.vcf.gz
     storeClass=JBrowse/Store/SeqFeature/VCFTabix
-    type=MultiVariantViewer/View/Track/MultiVariantViewer
+    type=MultiVariantViewer/View/Track/Grid
     showLabels=true
     labelFont=4px sans-serif
     style.height=10
@@ -49,7 +50,7 @@ In tracks.conf format
 In trackList.json format
 
     {
-        "type": "MultiVariantViewer/View/Track/MultiVariantViewer",
+        "type": "MultiVariantViewer/View/Track/Grid",
         "urlTemplate": "variants.vcf.gz",
         "label": "Variant track",
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
