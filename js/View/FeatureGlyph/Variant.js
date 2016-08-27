@@ -12,7 +12,7 @@ function(
 ) {
     return declare(FeatureGlyph, {
         getColor: function(feature, genotype, genotypeFull) {
-            return this.getConf('style.color', [feature, genotype, genotypeFull]);
+            return this.getConf('style.matrixColor', [feature, genotype, genotypeFull]);
         },
         renderFeature: function(context, fRect) {
             if (fRect.f.get('type') !== 'SNV') return null;

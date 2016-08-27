@@ -102,7 +102,6 @@ function(
             var scores = args.scores;
             var boxw = args.boxw;
             var bw = boxw / Math.sqrt(2);
-            var height = args.height;
 
             // resize dialog canvas
             var w = snps.length * boxw + 200;

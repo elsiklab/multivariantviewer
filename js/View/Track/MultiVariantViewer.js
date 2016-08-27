@@ -21,7 +21,7 @@ function(
     LDDialog
 ) {
     return declare(CanvasFeatures, {
-        constructor: function(args) {
+        constructor: function() {
             this.labels = {};
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function(elt) {
@@ -29,20 +29,20 @@ function(
                 }, this);
             }
         },
+
         _defaultConfig: function() {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
-                ldviewer: 'http://localhost:4730/',
                 style: {
-                    color: function(feat, gt, gtString) {
+                    height: 5,
+                    matrixColor: function(feat, gt, gtString) {
                         if (gt === 'ref') {
                             return '#aaa';
                         } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
                             return 'cyan';
                         }
                         return 'blue';
-                    },
-                    height: 5
+                    }
                 }
             });
         },
@@ -107,11 +107,10 @@ function(
                 }
             });
 
-            if(c.useLDViewer) {
+            if (c.useLDViewer) {
                 opts.push({
                     label: 'View variant LD',
                     onClick: function() {
-                        console.log(c.baseUrl + c.urlTemplate);
                         new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });
                     }
                 });

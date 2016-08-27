@@ -1,10 +1,14 @@
 define([
     'dojo/_base/declare',
+    'dojo/_base/lang',
+    'JBrowse/Util',
     'MultiVariantViewer/View/Dialog/VariantViewer',
     'MultiVariantViewer/View/Dialog/LDViewer'
 ],
 function(
     declare,
+    lang,
+    Util,
     VariantDialog,
     LDDialog
 ) {
@@ -20,11 +24,10 @@ function(
                 }
             });
 
-            if(c.useLDViewer) {
+            if (c.useLDViewer) {
                 opts.push({
                     label: 'View variant LD',
                     onClick: function() {
-                        console.log(c.baseUrl + c.urlTemplate);
                         new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });
                     }
                 });

@@ -13,7 +13,7 @@ function(
     return declare(Dialog, {
         title: 'MultiVariantViewer',
         getColor: function(track, feature, genotype, genotypeFull) {
-            return track.getConf('style.color', [feature, genotype, genotypeFull]);
+            return track.getConf('style.matrixColor', [feature, genotype, genotypeFull]);
         },
         show: function(args) {
             var track = args.track;
@@ -29,8 +29,6 @@ function(
             var color = lang.hitch(this, 'getColor');
             ctx.scale(2, 2);
 
-
-
             track.store.getFeatures(region, function(f) {
                 feats.push(f);
             }, function() {
@@ -39,8 +37,10 @@ function(
                 for (var i = 0; i < feats.length; i++) {
                     var genotypes = feats[i].get('genotypes');
                     delete genotypes.toString;
-                    var k = h / Object.keys(genotypes).length;
-                    Object.keys(genotypes).forEach(function(f, j) {
+                    var keys = Object.keys(genotypes);
+                    var k = h / keys.length;
+                    for (var j = 0; j < keys.length; j++) {
+                        var f = keys[j];
                         if (genotypes[f].GT) {
                             var valueParse = genotypes[f].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
@@ -54,7 +54,7 @@ function(
                             ctx.fillStyle = color(track, feats[i], 'ref');
                         }
                         ctx.fillRect(i * l, j * k, l + 0.5, k + 0.5);
-                    });
+                    }
                 }
             }, function(error) {
                 console.error(error);

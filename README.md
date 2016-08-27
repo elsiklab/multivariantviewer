@@ -4,12 +4,20 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ## Options
 
+
+### Tracktype
+ 
+* MultiVariantViewer/View/Track/VariantGrid - displays all genotypes, has special track menu
+* MultiVariantViewer/View/Track/Variants - displays variants as normal features, has special track menu
+
+
+### Style options
+
 * style->height - Pixel height for each sample. Default: 5
 * style->offset - Pixel offset between each sample. Default: 0
-* style->color - A color or a callback that returns colors. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
-* useLDViewer - Add option to track menu to view LD, requires running the linkage_server (described below)
+* style->matrixColor - A color or a callback that returns colors. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
 
-Subtrack label options
+### Subtrack label options
 
 * showLabels - Display subtrack labels (boolean)
 * showTooltips - Display mouseover tooltips with subtrack name and description (boolean)
@@ -19,8 +27,12 @@ Subtrack label options
 
 The sublabels are optional and default to just showing the sample names if not specified
 
-## Example configuration
+### LD viewing options
 
+* useLDViewer - Add option to track menu to view LD, requires running the linkage_server. Default false
+* ldviewer - URL for the linkage_server service. Default http://localhost:4730/
+
+## Example configuration
 
 In tracks.conf format
 
