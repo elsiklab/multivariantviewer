@@ -23,7 +23,6 @@ function(
     return declare(BlockBased, {
         constructor: function() {
             this.inherited(arguments);
-            this.boxw = 18;
             var def1 = new Deferred();
             this.def = new Deferred();
             var thisB = this;
@@ -51,17 +50,20 @@ function(
                             def1.resolve();
                         }, function(error) {
                             console.error('error', error.message);
-                            thisB.reject(error.message);
+                            def1.reject(error.message);
+                            thisB.fatalError = error.message;
                         });
                     },
                     function(error) {
                         console.error('error', error);
-                        thisB.reject(error);
+                        def1.reject(error);
+                        thisB.fatalError = error;
                     }
                 );
             }, function(error) {
                 console.error('error', error);
-                thisB.reject(error);
+                def1.reject(error);
+                thisB.fatalError = error;
             });
             this.feats = {};
 
@@ -71,24 +73,21 @@ function(
                 }, function() {
                     thisB.def.resolve();
                 }, function(error) {
-                    thisB.reject(error);
+                    thisB.def.reject(error);
+                    this.fatalError = error;
                 });
             });
         },
-        _defaultConfig: function() {
-            return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
-                style: {
-                    height: 1000
-                }
-            }));
-        },
 
         fillBlock: function(args) {
-            args.finishCallback();
+            var block = args.block;
+            this.def.then(function() {
+                args.finishCallback();
+            });
         },
 
         _canvasHeight: function() {
-            return +((this.config.style || {}).height) || 200;
+            return +((this.config.style || {}).height) || 500;
         },
 
         setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv, widthPct, widthPx, scale) {
@@ -137,8 +136,7 @@ function(
             var snps = this.results.snps;
             var boxw = Math.min((c.width - 200) / snps.length, 18);
             var bw = boxw / Math.sqrt(2);
-            var trans = (c.width / 2) - (snps.length * bw / 2);
-            console.log(boxw);
+            var trans = (c.width / 2) - (snps.length * boxw / 2);
 
             // render triangle rotated
             ctx.save();
