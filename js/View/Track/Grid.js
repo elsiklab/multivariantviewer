@@ -67,6 +67,10 @@ function(
 
             if (c.showLabels || c.showTooltips) {
                 this.store.getVCFHeader().then(function(header) {
+                    var keys = header.samples;
+                    if (thisB.config.sortByPopulation) {
+                        keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
+                    }
                     thisB.sublabels = array.map(header.samples, function(sample) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
@@ -85,7 +89,7 @@ function(
                         }, thisB.div);
                         htmlnode.tooltip = new Tooltip({
                             connectId: key,
-                            label: key + '<br />' + (elt.description || ''),
+                            label: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
                             showDelay: 0
                         });
                         return htmlnode;

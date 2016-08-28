@@ -22,8 +22,13 @@ function(
             var color = lang.hitch(this, 'getColor');
             var style = lang.hitch(this, 'getStyle');
             var height = this._getFeatureHeight(fRect.viewInfo, fRect.f);
+            var keys = Object.keys(genotypes);
+            var thisB = this;
+            if (this.config.sortByPopulation) {
+                keys.sort(function(a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); }); 
+            } 
 
-            Object.keys(genotypes).forEach(function(key, ret) {
+            keys.forEach(function(key, ret) {
                 var col;
                 if (genotypes[key].GT) {
                     var valueParse = genotypes[key].GT.values[0];

@@ -24,7 +24,8 @@ Each has a special track menu to view a matrix and optionally LD. The normal tra
 * showTooltips - Display mouseover tooltips with subtrack name and description (boolean)
 * labelFont - Specify subtrack label font CSS e.g. "6px sans-serif"
 * labelWidth - Specify a specific width for all subtrack labels. Default autosizes to each sublabel's length, which can look ugly
-* sublabels - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover"}
+* sublabels - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover", "population": "CEU"}
+* sortByPopulation - Sorts genotypes by population
 
 The sublabels are optional and default to just showing the sample names if not specified
 
