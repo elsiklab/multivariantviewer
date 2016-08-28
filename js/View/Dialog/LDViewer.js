@@ -57,9 +57,6 @@ function(
             var p = dojo.create('p', { className: 'errorld' }, div);
             dojo.style(this.containerNode, 'overflow', 'auto');
 
-
-
-
             // find actual refseq name in VCF file, for ex in volvox it's contigA instead of ctgA
             var region = this.browser.view.visibleRegion();
             this.track.store.getVCFHeader().then(function() {
@@ -145,7 +142,7 @@ function(
             this._position();
 
             // render snp names
-            if(this.drawnames) {
+            if (this.drawnames) {
                 for (var i = 0; i < snps.length; i++) {
                     var snp = snps[i];
                     ctx.save();

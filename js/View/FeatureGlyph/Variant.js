@@ -25,8 +25,8 @@ function(
             var keys = Object.keys(genotypes);
             var thisB = this;
             if (this.config.sortByPopulation) {
-                keys.sort(function(a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); }); 
-            } 
+                keys.sort(function(a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); });
+            }
 
             keys.forEach(function(key, ret) {
                 var col;

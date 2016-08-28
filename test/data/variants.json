@@ -5924,25 +5924,7 @@
           }
         ]
     },
-    {
-      "label": "1000 genomes phase 1 features",
-      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
-      "urlTemplate": "volvox.test.vcf.gz",
-      "type": "MultiVariantViewer/View/Track/Features",
-      "useLDViewer": true,
-      "ldviewer": "http://localhost:4730"
-    },
-    {
-      "label": "1000 genomes phase 1 grid w/o sublabels",
-      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
-      "urlTemplate": "volvox.test.vcf.gz",
-      "type": "MultiVariantViewer/View/Track/Grid",
-      "showLabels": true,
-      "showTooltips": true,
-      "style": {
-        "height": 12
-      }
-    },
+    
     {
       "label": "1000 genomes phase 1 grid sorted",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
@@ -11868,5 +11850,31 @@
           }
         ]
     },
+    {
+      "label": "1000 genomes phase 1 features",
+      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+      "urlTemplate": "volvox.test.vcf.gz",
+      "type": "MultiVariantViewer/View/Track/Features",
+      "useLDViewer": true,
+      "ldviewer": "http://localhost:4730"
+    },
+    {
+      "label": "1000 genomes phase 1 grid w/o sublabels",
+      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+      "urlTemplate": "volvox.test.vcf.gz",
+      "type": "MultiVariantViewer/View/Track/Grid",
+      "showLabels": true,
+      "showTooltips": true,
+      "style": {
+        "height": 12
+      }
+    },
+    {
+      "label": "1000 genomes phase 1 ldtrack",
+      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+      "urlTemplate": "volvox.test.vcf.gz",
+      "ldviewer": "http://localhost:4730",
+      "type": "MultiVariantViewer/View/Track/LDTrack"
+    }
   ]
 }
