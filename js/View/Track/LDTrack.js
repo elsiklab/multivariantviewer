@@ -99,7 +99,7 @@ function(
                             return '#aaa';
                         } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
                             return 'cyan';
-                        }   
+                        }
                         return 'blue';
                     }
                 },
@@ -115,7 +115,7 @@ function(
         updateStaticElements: function(coords) {
             this.inherited(arguments);
 
-            if (coords.hasOwnProperty('x')) {
+            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height')) {
                 var context = this.staticCanvas.getContext('2d');
 
                 this.staticCanvas.width = this.browser.view.elem.clientWidth;
