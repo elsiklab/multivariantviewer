@@ -80,7 +80,6 @@ function(
         },
 
         fillBlock: function(args) {
-            var block = args.block;
             this.def.then(function() {
                 args.finishCallback();
             });
@@ -90,7 +89,7 @@ function(
             return +((this.config.style || {}).height) || 500;
         },
 
-        setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv, widthPct, widthPx, scale) {
+        setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv) {
             this.inherited(arguments);
             this.staticCanvas = dom.create('canvas', { style: { cursor: 'default', position: 'absolute', zIndex: 15 }}, trackDiv);
         },
@@ -106,14 +105,6 @@ function(
                 this.staticCanvas.style.left = coords.x + 'px';
                 context.clearRect(0, 0, this.staticCanvas.width, this.staticCanvas.height);
 
-                var minVisible = this.browser.view.minVisible();
-                var maxVisible = this.browser.view.maxVisible();
-                var viewArgs = {
-                    minVisible: minVisible,
-                    maxVisible: maxVisible,
-                    bpToPx: dojo.hitch(this.browser.view, 'bpToPx'),
-                    lWidth: this.label.offsetWidth
-                };
                 this.heightUpdate(this._canvasHeight(), 0);
                 this.initRender();
             }

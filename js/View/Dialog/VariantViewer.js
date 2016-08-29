@@ -32,7 +32,7 @@ function(
                 dojo.create('label', { for: 'sortcheckbox', innerHTML: 'Sort?' }, ret);
                 var checkbox = dojo.create('input', { id: 'sortcheckbox', type: 'checkbox' }, ret);
                 dojo.create('br', ret);
-                on(checkbox, 'click', function(e) {
+                on(checkbox, 'click', function() {
                     thisB.drawMatrix(checkbox.checked);
                 });
             }
@@ -102,7 +102,7 @@ function(
                         var valueParse = genotypes[g].GT.values[0];
                         var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                         var split = valueParse.split(splitter);
-                        if ((split[0] != 0   || split[1] != 0) && (split[0] != '.' || split[1] != '.')) {
+                        if ((+split[0] !== 0   || +split[1] !== 0) && (split[0] !== '.' || split[1] !== '.')) {
                             ctx.fillStyle = color(track, feats[i], 'alt', valueParse);
                         } else {
                             ctx.fillStyle = color(track, feats[i], 'ref', valueParse);
