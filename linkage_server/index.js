@@ -20,6 +20,7 @@ app.get('/', function(req, res) {
     var ref = req.query.ref;
     var start = Math.round(req.query.start);
     var end = Math.round(req.query.end);
+    var maf = req.query.maf || 0.01;
     var vcf = req.query.url;
     var proc = child.spawn(settings.tabix, ['-p', 'vcf', '-h', vcf, ref + ':' + start + '-' + end]);
 
@@ -32,7 +33,8 @@ app.get('/', function(req, res) {
     proc.stdout.pipe(tabixvcf);
     proc.stderr.pipe(process.stderr);
     proc.on('exit', function() {
-        var p = child.spawn(settings.plink, [ '--vcf', vcfname, '--r2', 'triangle', '--out', outputname, '--allow-extra-chr', '--write-snplist' ]);
+        var params = [ '--vcf', vcfname, '--r2', 'triangle', '--out', outputname, '--allow-extra-chr', '--write-snplist', '--maf', maf ];
+        var p = child.spawn(settings.plink, params);
         p.stdout.pipe(process.stdout);
         p.stderr.pipe(process.stderr);
         p.on('exit', function() {

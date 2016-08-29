@@ -9,8 +9,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
  
 * MultiVariantViewer/View/Track/Grid - displays all genotypes
 * MultiVariantViewer/View/Track/Features - displays variants as normal features
-
-Each has a special track menu to view a matrix and optionally LD. The normal track type simply adds extra track menu options to a normal CanvasFeatures track.
+* MultiVariantViewer/View/Track/LDTrack - displays ld triangle on the genome browser
 
 ### Style options
 
@@ -32,7 +31,9 @@ The sublabels are optional and default to just showing the sample names if not s
 ### LD viewing options
 
 * useLDViewer - Add option to track menu to view LD, requires running the linkage_server. Default false
+* useMatrixViewer - Add option to track menu to view variant as matrix. Default true
 * ldviewer - URL for the linkage_server service. Default http://localhost:4730/
+* maf - Set minor allele frequency cutoff. Default 0.01
 
 ## Example configuration
 

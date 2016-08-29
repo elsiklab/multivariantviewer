@@ -7,6 +7,7 @@ define([
     'dojo/io-query',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
+    'MultiVariantViewer/View/Track/_MultiVariantOptions',
     'dojo/Deferred'
 ],
 function(
@@ -18,9 +19,10 @@ function(
     ioQuery,
     BlockBased,
     Util,
+    MultiVariantOptions,
     Deferred
 ) {
-    return declare(BlockBased, {
+    return declare([BlockBased, MultiVariantOptions], {
         constructor: function() {
             this.inherited(arguments);
             var def1 = new Deferred();
@@ -87,6 +89,22 @@ function(
 
         _canvasHeight: function() {
             return +((this.config.style || {}).height) || 500;
+        },
+
+        _defaultConfig: function() {
+            return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
+                style: {
+                    matrixColor: function(feat, gt, gtString) {
+                        if (gt === 'ref') {
+                            return '#aaa';
+                        } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
+                            return 'cyan';
+                        }   
+                        return 'blue';
+                    }
+                },
+                useMatrixViewer: true
+            }));
         },
 
         setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv) {

@@ -25,7 +25,8 @@ function(
                         }
                         return 'blue';
                     }
-                }
+                },
+                useMatrixViewer: true
             });
         }
     });

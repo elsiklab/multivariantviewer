@@ -11870,11 +11870,20 @@
       }
     },
     {
-      "label": "1000 genomes phase 1 ldtrack",
+      "label": "1000 genomes phase 1 ldtrack maf 0.01",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
       "ldviewer": "http://localhost:4730",
-      "type": "MultiVariantViewer/View/Track/LDTrack"
+      "type": "MultiVariantViewer/View/Track/LDTrack",
+      "maf": 0.01
+    },
+    {
+      "label": "1000 genomes phase 1 ldtrack maf 0.05",
+      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+      "urlTemplate": "volvox.test.vcf.gz",
+      "ldviewer": "http://localhost:4730",
+      "type": "MultiVariantViewer/View/Track/LDTrack",
+      "maf": 0.05
     }
   ]
 }

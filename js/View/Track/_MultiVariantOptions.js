@@ -17,12 +17,14 @@ function(
             var opts = this.inherited(arguments);
             var thisB = this;
             var c = this.config;
-            opts.push({
-                label: 'View variant matrix',
-                onClick: function() {
-                    new VariantDialog().show({ browser: thisB.browser, track: thisB });
-                }
-            });
+            if (c.useMatrixViewer) {
+                opts.push({
+                    label: 'View variant matrix',
+                    onClick: function() {
+                        new VariantDialog().show({ browser: thisB.browser, track: thisB });
+                    }
+                });
+            }
 
             if (c.useLDViewer) {
                 opts.push({
