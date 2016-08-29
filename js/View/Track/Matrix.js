@@ -23,6 +23,7 @@ function(
     return declare(BlockBased, {
         constructor: function() {
             this.labels = {};
+            this.redrawView = true;
 
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function(elt) {
@@ -67,9 +68,9 @@ function(
         updateStaticElements: function(coords) {
             var thisB = this;
             this.inherited(arguments);
-
-            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height')) {
-                this.def.then(function() {
+            this.def.then(function() {
+                if (coords.hasOwnProperty('x') && thisB.redrawView) {
+                    thisB.redrawView = false;
                     var context = thisB.staticCanvas.getContext('2d');
 
                     thisB.staticCanvas.width = thisB.browser.view.elem.clientWidth;
@@ -77,11 +78,16 @@ function(
                     thisB.staticCanvas.style.left = coords.x + 'px';
                     context.clearRect(0, 0, thisB.staticCanvas.width, thisB.staticCanvas.height);
 
-                    thisB.renderBox();
-                }, function(error) {
-                    console.error(error);
-                });
-            }
+                    thisB.renderBox(true);
+                }
+                else if(coords.hasOwnProperty('x')) {
+                    var context = thisB.staticCanvas.getContext('2d');
+                    thisB.staticCanvas.style.left = coords.x + 'px';
+
+                    context.clearRect(0, 0, thisB.staticCanvas.width, 80);
+                    thisB.renderBox(false);
+                }
+            });
         },
 
 
@@ -101,7 +107,7 @@ function(
             });
         },
 
-        renderBox: function() {
+        renderBox: function(allData) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var region = this.browser.view.visibleRegion();
@@ -113,62 +119,63 @@ function(
             var thisB = this;
 
 
-            // render triangle rotated
-            ctx.save();
+            // render snp matrix
+            if(allData) {
+                ctx.save();
+                ctx.translate(trans, 80);
+                if(!snps[0]) {
+                    return;
+                }
+                var g = snps[0].get('genotypes');
+                delete g.toString;
+                var keys = Object.keys(g);
+                if (this.config.sortByPopulation) {
+                    keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
+                }
 
+                for (var j = 0; j < snps.length; j++) {
+                    var snp = snps[j];
+                    var genotypes = snp.get('genotypes');
+                    for (var i = 0; i < keys.length; i++) {
+                        var key = keys[i];
+                        var col;
+                        if (genotypes[key].GT) {
+                            var valueParse = genotypes[key].GT.values[0];
+                            var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
+                            var split = valueParse.split(splitter);
 
-            ctx.translate(trans, 80);
-            if(!snps[0]) {
-                return;
-            }
-            var g = snps[0].get('genotypes');
-            delete g.toString;
-            var keys = Object.keys(g);
-            if (this.config.sortByPopulation) {
-                keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
-            }
-            for (var j = 0; j < snps.length; j++) {
-                var snp = snps[j];
-                var genotypes = snp.get('genotypes');
-                for (var i = 0; i < keys.length; i++) {
-                    var key = keys[i];
-                    var col;
-                    if (genotypes[key].GT) {
-                        var valueParse = genotypes[key].GT.values[0];
-                        var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
-                        var split = valueParse.split(splitter);
-
-                        if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                            col = 'blue';
-                        } else if (+split[0] !== +split[1]) {
-                            col = 'cyan';
+                            if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                                col = 'blue';
+                            } else if (+split[0] !== +split[1]) {
+                                col = 'cyan';
+                            } else {
+                                col = '#aaa';
+                            }
                         } else {
                             col = '#aaa';
                         }
-                    } else {
-                        col = '#aaa';
+                        ctx.fillStyle = col;
+                        ctx.fillRect(j * boxw, i * elt, boxw + 0.6, boxw + 0.6);
+                        ctx.fill();
                     }
-                    ctx.fillStyle = col;
-                    ctx.fillRect(j * boxw, i * elt, boxw + 0.6, boxw + 0.6);
-                    ctx.fill();
                 }
-            }
-            ctx.restore();
+                ctx.restore();
 
-            ctx.save();
-            ctx.translate(10, 80);
-            if (this.config.sublabels) {
-                for (var i = 0; i < keys.length; i++) {
-                    var f = keys[i].trim();
-                    ctx.fillStyle = this.labels[f].color;
-                    ctx.fillRect(0, i * elt, 10, boxw + 0.6);
+                ctx.save();
+                ctx.translate(10, 80);
+                if (this.config.sublabels) {
+                    for (var i = 0; i < keys.length; i++) {
+                        var f = keys[i].trim();
+                        ctx.fillStyle = this.labels[f].color;
+                        ctx.fillRect(0, i * elt, 10, boxw + 0.6);
+                    }
                 }
+                ctx.restore();
             }
-            ctx.restore();
 
+            // draw lines connecting variants to feats
             ctx.save();
             ctx.translate(trans, 40);
-            // draw lines
             ctx.stokeStyle = 'black';
             for (var k = 0; k < snps.length; k++) {
                 var snp = snps[k];
@@ -187,6 +194,7 @@ function(
             opts.push({
                 label: 'Refresh matrix',
                 onClick: function() {
+                    thisB.redrawView = true; 
                     thisB.getVariants();
                     thisB.redraw();
                 }

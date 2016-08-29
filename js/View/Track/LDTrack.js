@@ -22,6 +22,7 @@ function(
 ) {
     return declare(BlockBased, {
         constructor: function() {
+            this.redrawView = true;
             this.getLD();
         },
 
@@ -101,6 +102,7 @@ function(
             opts.push({
                 label: 'Refresh LD',
                 onClick: function() {
+                    thisB.redrawView = true;
                     thisB.getLD();
                     thisB.redraw();
                 }
@@ -117,7 +119,8 @@ function(
         updateStaticElements: function(coords) {
             this.inherited(arguments);
 
-            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height')) {
+            if (coords.hasOwnProperty('x') && this.redrawView) {
+                this.redrawView = false;
                 var context = this.staticCanvas.getContext('2d');
 
                 this.staticCanvas.width = this.browser.view.elem.clientWidth;
@@ -126,20 +129,29 @@ function(
                 context.clearRect(0, 0, this.staticCanvas.width, this.staticCanvas.height);
 
                 this.heightUpdate(this._canvasHeight(), 0);
-                this.initRender();
+                this.initRender(true);
+            }
+            else if(coords.hasOwnProperty('x')) {
+                var context = this.staticCanvas.getContext('2d');
+
+                this.staticCanvas.style.left = coords.x + 'px';
+                context.clearRect(0, 0, this.staticCanvas.width, 80);
+
+                this.heightUpdate(this._canvasHeight(), 0);
+                this.initRender(false);
             }
         },
-        initRender: function() {
+        initRender: function(allData) {
             var thisB = this;
             this.def.then(function() {
-                thisB.renderBox();
+                thisB.renderBox(allData);
             }, function(error) {
                 console.error(error);
             });
         },
 
 
-        renderBox: function() {
+        renderBox: function(allData) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var scores = this.results.scores;
@@ -149,23 +161,27 @@ function(
             var bw = boxw / Math.sqrt(2);
             var trans = (c.width / 2) - (snps.length * boxw / 2);
 
-            // render triangle rotated
-            ctx.save();
-            ctx.translate(trans, 80);
-            ctx.rotate(-Math.PI / 4);
-            for (var j = 0; j < scores.length; j++) {
-                var line = scores[j];
-                for (var i = 0; i < line.length; i++) {
-                    var score = line[i];
-                    ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
-                    ctx.fillRect(i * bw, j * bw, bw, bw);
-                    ctx.fill();
+            if(allData) {
+                // render triangle rotated
+                ctx.save();
+                ctx.translate(trans, 80);
+                ctx.rotate(-Math.PI / 4);
+                for (var j = 0; j < scores.length; j++) {
+                    var line = scores[j];
+                    for (var i = 0; i < line.length; i++) {
+                        var score = line[i];
+                        ctx.fillStyle = 'hsl(0,80%,' + (90 - score * 50) + '%)';
+                        ctx.fillRect(i * bw, j * bw, bw, bw);
+                        ctx.fill();
+                    }
                 }
+                ctx.restore();
             }
-            ctx.restore();
-            ctx.translate(trans, 40);
 
             // draw lines
+            ctx.save();
+            ctx.translate(trans, 40);
+
             ctx.stokeStyle = 'black';
             for (var k = 0; k < snps.length; k++) {
                 var snp = snps[k];
@@ -178,6 +194,7 @@ function(
                     ctx.stroke();
                 }
             }
+            ctx.restore();
         },
 
         parseResults: function(res) {
