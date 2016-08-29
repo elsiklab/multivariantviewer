@@ -6,8 +6,7 @@ define([
     'JBrowse/Util',
     'dijit/Tooltip',
     'dojo/Deferred',
-    'MultiVariantViewer/View/Dialog/VariantViewer',
-    'MultiVariantViewer/View/Dialog/LDViewer'
+    'MultiVariantViewer/View/Dialog/_MultiVariantOptions'
 ],
 function(
     declare,
@@ -17,10 +16,9 @@ function(
     Util,
     Tooltip,
     Deferred,
-    VariantDialog,
-    LDDialog
+    MultiVariantOptions
 ) {
-    return declare(CanvasFeatures, {
+    return declare([CanvasFeatures, MultiVariantOptions], {
         constructor: function() {
             this.labels = {};
             if (this.config.sublabels) {
@@ -99,28 +97,6 @@ function(
             }
 
             this.inherited(arguments);
-        },
-
-        _trackMenuOptions: function() {
-            var opts = this.inherited(arguments);
-            var thisB = this;
-            var c = this.config;
-            opts.push({
-                label: 'View variant matrix',
-                onClick: function() {
-                    new VariantDialog().show({ browser: thisB.browser, track: thisB });
-                }
-            });
-
-            if (c.useLDViewer) {
-                opts.push({
-                    label: 'View variant LD',
-                    onClick: function() {
-                        new LDDialog().show({ browser: thisB.browser, track: thisB, ldviewer: thisB.config.ldviewer, url: c.baseUrl + c.urlTemplate });
-                    }
-                });
-            }
-            return opts;
         },
 
         updateStaticElements: function(coords) {
