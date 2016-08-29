@@ -28,12 +28,13 @@ function(
         },
 
         getLD: function() {
-            // use this promise chain to get original names of refseq in vcf
             var ref;
             var thisB = this;
             var def1 = new Deferred();
             this.def = new Deferred();
             var region = this.browser.view.visibleRegion();
+
+            // use this promise chain to get original names of refseq in vcf
             this.store.getVCFHeader().then(function() {
                 thisB.store.indexedData.getLines(
                     region.ref,
