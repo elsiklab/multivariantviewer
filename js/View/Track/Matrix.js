@@ -7,7 +7,6 @@ define([
     'dojo/io-query',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
-    'MultiVariantViewer/View/Track/_MultiVariantOptions',
     'dojo/Deferred'
 ],
 function(
@@ -19,10 +18,9 @@ function(
     ioQuery,
     BlockBased,
     Util,
-    MultiVariantOptions,
     Deferred
 ) {
-    return declare([BlockBased, MultiVariantOptions], {
+    return declare(BlockBased, {
         constructor: function() {
             this.labels = {};
             this.init = false;
@@ -40,8 +38,10 @@ function(
         },
 
         _canvasHeight: function() {
-            var boxw = Math.min((this.staticCanvas.width - 200) / this.snps.length, 18)
-            return this.snps.length*boxw;
+            var g = this.snps[0].get('genotypes');
+            delete g.toString;
+
+            return Object.keys(g).length * this.config.style.elt;
         },
 
         _defaultConfig: function() {
@@ -50,19 +50,6 @@ function(
                     elt: 1
                 }
             }));
-        },
-        _trackMenuOptions: function() {
-            var opts = this.inherited(arguments);
-            var thisB = this;
-            opts.push({
-                label: 'Refresh LD',
-                onClick: function() {
-                    thisB.getLD();
-                    thisB.redraw();
-                }
-            });
-
-            return opts;
         },
 
         setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv) {
@@ -74,9 +61,9 @@ function(
             var thisB = this;
             this.inherited(arguments);
 
-            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height') && (!this.init||!coords.hasOwnProperty('y'))) {
+            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height') && (!this.init || !coords.hasOwnProperty('y'))) {
                 this.init = true;
-                
+
                 this.def.then(function() {
                     var context = thisB.staticCanvas.getContext('2d');
 
@@ -92,7 +79,7 @@ function(
                 });
             }
         },
-        
+
 
         getVariants: function() {
             var thisB = this;
@@ -144,7 +131,7 @@ function(
                         var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                         var split = valueParse.split(splitter);
 
-                        if (+split[0] == +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                        if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
                             col = 'blue';
                         } else if (+split[0] !== +split[1]) {
                             col = 'cyan';
@@ -168,7 +155,7 @@ function(
                     var f = keys[i].trim();
                     ctx.fillStyle = this.labels[f].color;
                     ctx.fillRect(0, i * elt, 10, boxw + 0.6);
-                }   
+                }
             }
             ctx.restore();
 
@@ -195,8 +182,8 @@ function(
                 onClick: function() {
                     thisB.getVariants();
                     thisB.redraw();
-                }   
-            }); 
+                }
+            });
 
             return opts;
         }

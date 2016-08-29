@@ -7,7 +7,6 @@ define([
     'dojo/io-query',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
-    'MultiVariantViewer/View/Track/_MultiVariantOptions',
     'dojo/Deferred'
 ],
 function(
@@ -19,10 +18,9 @@ function(
     ioQuery,
     BlockBased,
     Util,
-    MultiVariantOptions,
     Deferred
 ) {
-    return declare([BlockBased, MultiVariantOptions], {
+    return declare(BlockBased, {
         constructor: function() {
             this.getLD();
         },

@@ -4,9 +4,7 @@ define([
     'dojo/_base/lang',
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
-    'dijit/Tooltip',
-    'dojo/Deferred',
-    'MultiVariantViewer/View/Track/_MultiVariantOptions'
+    'dijit/Tooltip'
 ],
 function(
     declare,
@@ -14,11 +12,9 @@ function(
     lang,
     CanvasFeatures,
     Util,
-    Tooltip,
-    Deferred,
-    MultiVariantOptions
+    Tooltip
 ) {
-    return declare([CanvasFeatures, MultiVariantOptions], {
+    return declare([CanvasFeatures], {
         constructor: function() {
             this.labels = {};
             if (this.config.sublabels) {
