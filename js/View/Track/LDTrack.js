@@ -95,21 +95,6 @@ function(
             return +((this.config.style || {}).height) || 500;
         },
 
-        _defaultConfig: function() {
-            return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
-                style: {
-                    matrixColor: function(feat, gt, gtString) {
-                        if (gt === 'ref') {
-                            return '#aaa';
-                        } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
-                            return 'cyan';
-                        }
-                        return 'blue';
-                    }
-                },
-                useMatrixViewer: true
-            }));
-        },
         _trackMenuOptions: function() {
             var opts = this.inherited(arguments);
             var thisB = this;

@@ -1,3 +1,9 @@
+# Version 0.3.0
+
+- Removed dialog boxes
+- Improved LD track
+- Added matrix track
+
 # Version 0.2.0
 
 - Plot LD and matrix in dialog boxes

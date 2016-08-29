@@ -7,10 +7,9 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ### Tracktype
  
-* MultiVariantViewer/View/Track/Grid - displays all genotypes
-* MultiVariantViewer/View/Track/Features - displays variants as normal features
+* MultiVariantViewer/View/Track/Grid - displays all genotypes for features
 * MultiVariantViewer/View/Track/LDTrack - displays ld triangle on the genome browser
-* MultiVariantViewer/View/Track/Matrix - displays variant grid on the genome browser
+* MultiVariantViewer/View/Track/Matrix - displays all genotypes for features in matrix form
 
 ### Style options
 
@@ -31,8 +30,6 @@ The sublabels are optional and default to just showing the sample names if not s
 
 ### LD viewing options
 
-* useLDViewer - Add option to track menu to view LD, requires running the linkage_server. Default false
-* useMatrixViewer - Add option to track menu to view variant as matrix. Default true
 * ldviewer - URL for the linkage_server service. Default http://localhost:4730/
 * maf - Set minor allele frequency cutoff. Default 0.01
 
@@ -73,7 +70,7 @@ See test subdirectory for example, you can use http://localhost/jbrowse/?data=pl
 
 ![](img/example.png)
 
-Shows 1000genomes VCF data
+Shows 1000genomes VCF data, tooltips on sidebar
 
 ![](img/matrix.png)
 
