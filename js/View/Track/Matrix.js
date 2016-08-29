@@ -41,10 +41,14 @@ function(
         },
 
         _canvasHeight: function() {
-            var g = this.snps[0].get('genotypes');
-            delete g.toString;
-
-            return Object.keys(g).length * this.config.style.elt;
+            if(this.snps[0]) {
+                var g = this.snps[0].get('genotypes');
+                delete g.toString;
+                return Object.keys(g).length * this.config.style.elt;
+            }
+            else {
+                return 0;
+            }
         },
 
         _defaultConfig: function() {
@@ -114,6 +118,9 @@ function(
 
 
             ctx.translate(trans, 80);
+            if(!snps[0]) {
+                return;
+            }
             var g = snps[0].get('genotypes');
             delete g.toString;
             var keys = Object.keys(g);

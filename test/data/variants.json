@@ -1,7 +1,7 @@
 {
   "tracks": [
     {
-      "label": "1000 genomes phase 1 grid",
+      "label": "1000 genomes phase 1 matrix",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "MultiVariantViewer/View/Track/Matrix",
@@ -5925,7 +5925,7 @@
     },
     
     {
-      "label": "1000 genomes phase 1 grid sorted",
+      "label": "1000 genomes phase 1 matrix sorted",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
       "sortByPopulation": true,
@@ -11852,8 +11852,7 @@
       "label": "1000 genomes phase 1 features",
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
-      "type": "MultiVariantViewer/View/Track/Matrix",
-      "ldviewer": "http://localhost:4730"
+      "type": "JBrowse/View/Track/CanvasVariants"
     },
     {
       "label": "1000 genomes phase 1 ldtrack maf 0.01",

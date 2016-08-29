@@ -38,19 +38,26 @@ app.get('/', function(req, res) {
         p.stdout.pipe(process.stdout);
         p.stderr.pipe(process.stderr);
         p.on('exit', function() {
-            res.send(fs.readFileSync(outputname + '.snplist') + '\nbreak\n' + fs.readFileSync(outputname + '.ld'));
-            if (settings.deleteFiles) {
-                fs.unlinkSync(vcfname);
-                fs.unlinkSync(outputname + '.nosex');
-                fs.unlinkSync(outputname + '.snplist');
-                fs.unlinkSync(outputname + '.log');
-                fs.unlinkSync(outputname + '.ld');
-                if(settings.debug) {
-                    console.log(vcfname, outputname + '.nosex', outputname + '.snplist', outputname + '.log', outputname + '.ld');
+            try {
+                res.send(fs.readFileSync(outputname + '.snplist') + '\nbreak\n' + fs.readFileSync(outputname + '.ld'));
+                if (settings.deleteFiles) {
+                    fs.unlinkSync(vcfname);
+                    fs.unlinkSync(outputname + '.nosex');
+                    fs.unlinkSync(outputname + '.snplist');
+                    fs.unlinkSync(outputname + '.log');
+                    fs.unlinkSync(outputname + '.ld');
+                    if(settings.debug) {
+                        console.log(vcfname, outputname + '.nosex', outputname + '.snplist', outputname + '.log', outputname + '.ld');
+                    }
                 }
+            }
+            catch(e) {
+                console.error(e);
+                res.send('break');
             }
         });
     });
+    
 });
 
 app.listen(process.env.EXPRESS_PORT || 4730);
