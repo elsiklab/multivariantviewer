@@ -24,14 +24,16 @@ function(
 ) {
     return declare([BlockBased, MultiVariantOptions], {
         constructor: function() {
-            this.inherited(arguments);
+            this.getLD();
+        },
+
+        getLD: function() {
+            // use this promise chain to get original names of refseq in vcf
+            var ref;
+            var thisB = this;
             var def1 = new Deferred();
             this.def = new Deferred();
-            var thisB = this;
             var region = this.browser.view.visibleRegion();
-            var ref;
-
-            // use this promise chain to get original names of refseq in vcf
             this.store.getVCFHeader().then(function() {
                 thisB.store.indexedData.getLines(
                     region.ref,
@@ -105,6 +107,19 @@ function(
                 },
                 useMatrixViewer: true
             }));
+        },
+        _trackMenuOptions: function() {
+            var opts = this.inherited(arguments);
+            var thisB = this;
+            opts.push({
+                label: 'Refresh LD',
+                onClick: function() {
+                    thisB.getLD();
+                    thisB.redraw();
+                }
+            });
+
+            return opts;
         },
 
         setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv) {
