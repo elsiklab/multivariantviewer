@@ -25,6 +25,7 @@ function(
     return declare([BlockBased, MultiVariantOptions], {
         constructor: function() {
             this.labels = {};
+            this.init = false;
 
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function(elt) {
@@ -39,22 +40,15 @@ function(
         },
 
         _canvasHeight: function() {
-            return +((this.config.style || {}).height) || 500;
+            var boxw = Math.min((this.staticCanvas.width - 200) / this.snps.length, 18)
+            return this.snps.length*boxw;
         },
 
         _defaultConfig: function() {
             return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
                 style: {
-                    matrixColor: function(feat, gt, gtString) {
-                        if (gt === 'ref') {
-                            return '#aaa';
-                        } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
-                            return 'cyan';
-                        }
-                        return 'blue';
-                    }
-                },
-                useMatrixViewer: true
+                    elt: 1
+                }
             }));
         },
         _trackMenuOptions: function() {
@@ -77,39 +71,28 @@ function(
         },
 
         updateStaticElements: function(coords) {
+            var thisB = this;
             this.inherited(arguments);
 
-            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height')) {
-                var context = this.staticCanvas.getContext('2d');
+            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height') && (!this.init||!coords.hasOwnProperty('y'))) {
+                this.init = true;
+                
+                this.def.then(function() {
+                    var context = thisB.staticCanvas.getContext('2d');
 
-                this.staticCanvas.width = this.browser.view.elem.clientWidth;
-                this.staticCanvas.height = this._canvasHeight();
-                this.staticCanvas.style.left = coords.x + 'px';
-                context.clearRect(0, 0, this.staticCanvas.width, this.staticCanvas.height);
+                    thisB.staticCanvas.width = thisB.browser.view.elem.clientWidth;
+                    thisB.staticCanvas.height = thisB._canvasHeight();
+                    thisB.staticCanvas.style.left = coords.x + 'px';
+                    context.clearRect(0, 0, thisB.staticCanvas.width, thisB.staticCanvas.height);
 
-                this.heightUpdate(this._canvasHeight(), 0);
-                this.initRender();
-                if (this.sublabels) {
-                    var height = this.config.style.height + (this.config.style.offset || 0);
-                    var len = this.sublabels.length;
-                    array.forEach(this.sublabels, function(sublabel, i) {
-                        sublabel.style.left = coords.x + 'px';
-                        sublabel.style.top = i * height + 'px';
-                        if (i === len - 1) {
-                            dojo.addClass(sublabel, 'last');
-                        }
-                    });
-                }
+                    thisB.heightUpdate(thisB._canvasHeight(), 0);
+                    thisB.renderBox();
+                }, function(error) {
+                    console.error(error);
+                });
             }
         },
-        initRender: function() {
-            var thisB = this;
-            this.def.then(function() {
-                thisB.renderBox();
-            }, function(error) {
-                console.error(error);
-            });
-        },
+        
 
         getVariants: function() {
             var thisB = this;
@@ -132,7 +115,8 @@ function(
             var ctx = c.getContext('2d');
             var region = this.browser.view.visibleRegion();
             var snps = this.snps;
-            var boxw = Math.min((c.width - 200) / snps.length, 18);
+            var boxw = (c.width - 200) / snps.length;
+            var elt = this.config.style.elt;
             var bw = boxw / Math.sqrt(2);
             var trans = (c.width / 2) - (snps.length * boxw / 2);
             var thisB = this;
@@ -147,12 +131,11 @@ function(
             delete g.toString;
             var keys = Object.keys(g);
             if (this.config.sortByPopulation) {
-                keys.sort(function(a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); });
+                keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
             }
             for (var j = 0; j < snps.length; j++) {
                 var snp = snps[j];
                 var genotypes = snp.get('genotypes');
-                var color = lang.hitch(this, 'getColor');
                 for (var i = 0; i < keys.length; i++) {
                     var key = keys[i];
                     var col;
@@ -160,22 +143,37 @@ function(
                         var valueParse = genotypes[key].GT.values[0];
                         var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                         var split = valueParse.split(splitter);
-                        if ((+split[0] !== 0   || +split[1] !== 0) && (split[0] !== '.' || split[1] !== '.')) {
-                            col = color(snp, 'alt', valueParse);
+
+                        if (+split[0] == +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                            col = 'blue';
+                        } else if (+split[0] !== +split[1]) {
+                            col = 'cyan';
                         } else {
-                            col = color(snp, 'ref', valueParse);
+                            col = '#aaa';
                         }
                     } else {
-                        col = color(snp, 'ref');
+                        col = '#aaa';
                     }
                     ctx.fillStyle = col;
-                    ctx.fillRect(j * boxw, i * boxw, boxw + 0.6, boxw + 0.6);
+                    ctx.fillRect(j * boxw, i * elt, boxw + 0.6, boxw + 0.6);
                     ctx.fill();
                 }
             }
             ctx.restore();
-            ctx.translate(trans, 40);
 
+            ctx.save();
+            ctx.translate(10, 80);
+            if (this.config.sublabels) {
+                for (var i = 0; i < keys.length; i++) {
+                    var f = keys[i].trim();
+                    ctx.fillStyle = this.labels[f].color;
+                    ctx.fillRect(0, i * elt, 10, boxw + 0.6);
+                }   
+            }
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(trans, 40);
             // draw lines
             ctx.stokeStyle = 'black';
             for (var k = 0; k < snps.length; k++) {
@@ -186,10 +184,9 @@ function(
                 ctx.lineTo(pos - 3, 0);
                 ctx.stroke();
             }
+            ctx.restore();
         },
-        getColor: function(feature, genotype, genotypeFull) {
-            return this.getConf('style.matrixColor', [feature, genotype, genotypeFull]);
-        },
+
         _trackMenuOptions: function() {
             var opts = this.inherited(arguments);
             var thisB = this;

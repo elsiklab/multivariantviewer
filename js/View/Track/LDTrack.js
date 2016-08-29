@@ -48,7 +48,8 @@ function(
                             ref: ref,
                             start: region.start,
                             end: region.end,
-                            url: thisB.config.baseUrl + '/' + thisB.config.urlTemplate
+                            url: thisB.config.baseUrl + '/' + thisB.config.urlTemplate,
+                            maf: thisB.config.maf
                         };
                         request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
                             thisB.results = thisB.parseResults(res);

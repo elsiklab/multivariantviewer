@@ -10,6 +10,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 * MultiVariantViewer/View/Track/Grid - displays all genotypes
 * MultiVariantViewer/View/Track/Features - displays variants as normal features
 * MultiVariantViewer/View/Track/LDTrack - displays ld triangle on the genome browser
+* MultiVariantViewer/View/Track/Matrix - displays variant grid on the genome browser
 
 ### Style options
 

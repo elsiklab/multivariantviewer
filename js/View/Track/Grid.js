@@ -6,7 +6,7 @@ define([
     'JBrowse/Util',
     'dijit/Tooltip',
     'dojo/Deferred',
-    'MultiVariantViewer/View/Dialog/_MultiVariantOptions'
+    'MultiVariantViewer/View/Track/_MultiVariantOptions'
 ],
 function(
     declare,
