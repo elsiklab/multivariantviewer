@@ -84,7 +84,9 @@ function(
         },
 
         fillBlock: function(args) {
+            var thisB = this;
             this.def.then(function() {
+                thisB.heightUpdate(thisB._canvasHeight(), args.blockIndex);
                 args.finishCallback();
             });
         },

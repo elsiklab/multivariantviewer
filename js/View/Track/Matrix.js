@@ -23,7 +23,6 @@ function(
     return declare(BlockBased, {
         constructor: function() {
             this.labels = {};
-            this.init = false;
 
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function(elt) {
@@ -34,6 +33,10 @@ function(
         },
 
         fillBlock: function(args) {
+            var thisB = this;
+            this.def.then(function() {
+                thisB.heightUpdate(thisB._canvasHeight(), args.blockIndex);
+            });
             args.finishCallback();
         },
 
@@ -61,9 +64,7 @@ function(
             var thisB = this;
             this.inherited(arguments);
 
-            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height') && (!this.init || !coords.hasOwnProperty('y'))) {
-                this.init = true;
-
+            if (coords.hasOwnProperty('x') && !coords.hasOwnProperty('height')) {
                 this.def.then(function() {
                     var context = thisB.staticCanvas.getContext('2d');
 
@@ -72,7 +73,6 @@ function(
                     thisB.staticCanvas.style.left = coords.x + 'px';
                     context.clearRect(0, 0, thisB.staticCanvas.width, thisB.staticCanvas.height);
 
-                    thisB.heightUpdate(thisB._canvasHeight(), 0);
                     thisB.renderBox();
                 }, function(error) {
                     console.error(error);
