@@ -54,32 +54,27 @@ function(
                             thisB.results = thisB.parseResults(res);
                             def1.resolve();
                         }, function(error) {
-                            console.error('error', error.message);
                             def1.reject(error.message);
-                            thisB.fatalError = error.message;
                         });
                     },
                     function(error) {
-                        console.error('error', error);
                         def1.reject(error);
-                        thisB.fatalError = error;
                     }
                 );
             }, function(error) {
-                console.error('error', error);
                 def1.reject(error);
-                thisB.fatalError = error;
             });
-            this.feats = {};
+            this.featStarts = {};
 
             def1.then(function() {
                 thisB.store.getFeatures(region, function(feat) {
-                    thisB.feats[feat.get('name')] = feat;
+                    thisB.featStarts[feat.get('name')] = feat.get('start');
                 }, function() {
                     thisB.def.resolve();
                 }, function(error) {
                     thisB.def.reject(error);
                     this.fatalError = error;
+                    console.error(error);
                 });
             });
         },
@@ -93,7 +88,7 @@ function(
         },
 
         _canvasHeight: function() {
-            return +((this.config.style || {}).height) || 500;
+            return +((this.config.style || {}).height) || 520;
         },
 
         _trackMenuOptions: function() {
@@ -121,15 +116,31 @@ function(
 
             if (coords.hasOwnProperty('x') && this.redrawView) {
                 this.redrawView = false;
-                var context = this.staticCanvas.getContext('2d');
+                var c = this.staticCanvas;
+                var context = c.getContext('2d');
 
-                this.staticCanvas.width = this.browser.view.elem.clientWidth;
-                this.staticCanvas.height = this._canvasHeight();
-                this.staticCanvas.style.left = coords.x + 'px';
+                c.width = this.browser.view.elem.clientWidth;
+                c.height = this._canvasHeight();
+                c.style.left = coords.x + 'px';
+                this.oldW = c.width;
+
+                var ratio = Util.getResolution(context, this.browser.config.highResolutionMode);
+                if (this.browser.config.highResolutionMode !== 'disabled' && ratio >= 1) {
+                    var oldWidth = c.width;
+                    var oldHeight = c.height;
+
+                    c.width = Math.round(oldWidth * ratio);
+                    c.height = Math.round(oldHeight * ratio);
+
+                    c.style.width = oldWidth + 'px';
+                    c.style.height = oldHeight + 'px';
+                    context.scale(ratio, ratio);
+                }
+                
                 context.clearRect(0, 0, this.staticCanvas.width, this.staticCanvas.height);
 
                 this.heightUpdate(this._canvasHeight(), 0);
-                this.initRender(true);
+                this.initRender(true, this.oldW);
             }
             else if(coords.hasOwnProperty('x')) {
                 var context = this.staticCanvas.getContext('2d');
@@ -138,33 +149,34 @@ function(
                 context.clearRect(0, 0, this.staticCanvas.width, 80);
 
                 this.heightUpdate(this._canvasHeight(), 0);
-                this.initRender(false);
+                this.initRender(false, this.oldW);
             }
         },
-        initRender: function(allData) {
+        initRender: function(allData, w) {
             var thisB = this;
             this.def.then(function() {
-                thisB.renderBox(allData);
+                thisB.renderBox(allData, w);
             }, function(error) {
                 console.error(error);
+                thisB.fatalError = error.message;
             });
         },
 
 
-        renderBox: function(allData) {
+        renderBox: function(allData, w) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var scores = this.results.scores;
             var region = this.browser.view.visibleRegion();
             var snps = this.results.snps;
-            var boxw = Math.min((c.width - 200) / snps.length, 18);
+            var boxw = Math.min((w - 200) / snps.length, 18);
             var bw = boxw / Math.sqrt(2);
-            var trans = (c.width / 2) - (snps.length * boxw / 2);
+            var trans = (w / 2) - (snps.length * boxw / 2);
 
             if(allData) {
                 // render triangle rotated
                 ctx.save();
-                ctx.translate(trans, 80);
+                ctx.translate(trans, 90);
                 ctx.rotate(-Math.PI / 4);
                 for (var j = 0; j < scores.length; j++) {
                     var line = scores[j];
@@ -185,9 +197,9 @@ function(
             ctx.stokeStyle = 'black';
             for (var k = 0; k < snps.length; k++) {
                 var snp = snps[k];
-                var feat = this.feats[snp];
-                if (feat) {
-                    var pos = (feat.get('start') - region.start) * c.width / (region.end - region.start) - trans;
+                var featStart = this.featStarts[snp];
+                if (featStart) {
+                    var pos = (featStart - region.start) * w / (region.end - region.start) - trans;
                     ctx.beginPath();
                     ctx.moveTo(k * boxw + bw - 3, 30);
                     ctx.lineTo(pos - 3, 0);

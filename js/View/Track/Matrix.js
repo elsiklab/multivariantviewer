@@ -21,9 +21,10 @@ function(
     Deferred
 ) {
     return declare(BlockBased, {
-        constructor: function() {
+        constructor: function(args) {
             this.labels = {};
             this.redrawView = true;
+            this.browser = args.browser;
 
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function(elt) {
@@ -42,14 +43,12 @@ function(
         },
 
         _canvasHeight: function() {
-            if(this.snps[0]) {
+            if (this.snps[0]) {
                 var g = this.snps[0].get('genotypes');
                 delete g.toString;
                 return Object.keys(g).length * this.config.style.elt;
             }
-            else {
-                return 0;
-            }
+            return 0;
         },
 
         _defaultConfig: function() {
@@ -69,23 +68,39 @@ function(
             var thisB = this;
             this.inherited(arguments);
             this.def.then(function() {
+                var ratio = Util.getResolution(context, thisB.browser.config.highResolutionMode);
                 if (coords.hasOwnProperty('x') && thisB.redrawView) {
                     thisB.redrawView = false;
-                    var context = thisB.staticCanvas.getContext('2d');
+                    var c = thisB.staticCanvas;
+                    var context = c.getContext('2d');
 
-                    thisB.staticCanvas.width = thisB.browser.view.elem.clientWidth;
-                    thisB.staticCanvas.height = thisB._canvasHeight();
-                    thisB.staticCanvas.style.left = coords.x + 'px';
+                    c.width = thisB.browser.view.elem.clientWidth;
+                    c.height = thisB._canvasHeight();
+                    c.style.left = coords.x + 'px';
+                    this.oldW = c.width;
+
+                    if (thisB.browser.config.highResolutionMode !== 'disabled' && ratio >= 1) {
+                        var w = c.width;
+                        var h = c.height;
+                        this.oldW = w;
+
+                        c.width = Math.round(w * ratio);
+                        c.height = Math.round(h * ratio);
+
+                        c.style.width = w + 'px';
+                        c.style.height = h + 'px';
+
+                        context.scale(ratio, ratio);
+                    }
                     context.clearRect(0, 0, thisB.staticCanvas.width, thisB.staticCanvas.height);
 
-                    thisB.renderBox(true);
-                }
-                else if(coords.hasOwnProperty('x')) {
+                    thisB.renderBox(true, this.oldW);
+                } else if (coords.hasOwnProperty('x')) {
                     var context = thisB.staticCanvas.getContext('2d');
                     thisB.staticCanvas.style.left = coords.x + 'px';
 
                     context.clearRect(0, 0, thisB.staticCanvas.width, 80);
-                    thisB.renderBox(false);
+                    thisB.renderBox(false, this.oldW);
                 }
             });
         },
@@ -107,23 +122,23 @@ function(
             });
         },
 
-        renderBox: function(allData) {
+        renderBox: function(allData, w, h) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var region = this.browser.view.visibleRegion();
             var snps = this.snps;
-            var boxw = (c.width - 200) / snps.length;
+            var boxw = (w - 200) / snps.length;
             var elt = this.config.style.elt;
             var bw = boxw / Math.sqrt(2);
-            var trans = (c.width / 2) - (snps.length * boxw / 2);
+            var trans = (w / 2) - (snps.length * boxw / 2);
             var thisB = this;
 
 
             // render snp matrix
-            if(allData) {
+            if (allData) {
                 ctx.save();
                 ctx.translate(trans, 80);
-                if(!snps[0]) {
+                if (!snps[0]) {
                     return;
                 }
                 var g = snps[0].get('genotypes');
@@ -179,7 +194,7 @@ function(
             ctx.stokeStyle = 'black';
             for (var k = 0; k < snps.length; k++) {
                 var snp = snps[k];
-                var pos = (snp.get('start') - region.start) * c.width / (region.end - region.start) - trans;
+                var pos = (snp.get('start') - region.start) * w / (region.end - region.start) - trans;
                 ctx.beginPath();
                 ctx.moveTo(k * boxw + bw - 3, 30);
                 ctx.lineTo(pos - 3, 0);
@@ -194,11 +209,20 @@ function(
             opts.push({
                 label: 'Refresh matrix',
                 onClick: function() {
-                    thisB.redrawView = true; 
+                    thisB.redrawView = true;
                     thisB.getVariants();
                     thisB.redraw();
                 }
             });
+            if(this.labels) {
+                opts.push({
+                    label: 'Sort by population',
+                    onClick: function() {
+                        thisB.config.sortByPopulation = true;
+                        thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
+                    }
+                });
+            }
 
             return opts;
         }
