@@ -7,7 +7,8 @@ define([
     'dojo/io-query',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
-    'dojo/Deferred'
+    'dojo/Deferred',
+    'dojo/promise/all'
 ],
 function(
     declare,
@@ -18,23 +19,24 @@ function(
     ioQuery,
     BlockBased,
     Util,
-    Deferred
+    Deferred,
+    all
 ) {
     return declare(BlockBased, {
         constructor: function() {
             this.redrawView = true;
-            this.getLD();
+            this.def = this.getLD();
         },
 
         getLD: function() {
             var ref;
             var thisB = this;
-            var def1 = new Deferred();
-            this.def = new Deferred();
             var region = this.browser.view.visibleRegion();
+            this.featStarts = {};
 
             // use this promise chain to get original names of refseq in vcf
-            this.store.getVCFHeader().then(function() {
+            var d1 = this.store.getVCFHeader().then(function() {
+                var d = new Deferred();
                 thisB.store.indexedData.getLines(
                     region.ref,
                     region.start,
@@ -42,41 +44,44 @@ function(
                     function(line) {
                         ref = line.ref;
                     },
-                    function() {
-                        var query = {
-                            ref: ref,
-                            start: region.start,
-                            end: region.end,
-                            url: thisB.config.baseUrl + '/' + thisB.config.urlTemplate,
-                            maf: thisB.config.maf
-                        };
-                        request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
-                            thisB.results = thisB.parseResults(res);
-                            def1.resolve();
-                        }, function(error) {
-                            def1.reject(error.message);
-                        });
+                    function(res) {
+                        d.resolve(res);
                     },
                     function(error) {
-                        def1.reject(error);
+                        d.reject(error);
                     }
                 );
-            }, function(error) {
-                def1.reject(error);
-            });
-            this.featStarts = {};
-
-            def1.then(function() {
-                thisB.store.getFeatures(region, function(feat) {
-                    thisB.featStarts[feat.get('name')] = feat.get('start');
-                }, function() {
-                    thisB.def.resolve();
+                return d;
+            }).then(function() {
+                var query = {
+                    ref: ref,
+                    start: region.start,
+                    end: region.end,
+                    url: thisB.config.baseUrl + '/' + thisB.config.urlTemplate,
+                    maf: thisB.config.maf
+                };
+                var d = new Deferred();
+                request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
+                    thisB.results = thisB.parseResults(res);
+                    d.resolve();
                 }, function(error) {
-                    thisB.def.reject(error);
-                    this.fatalError = error;
-                    console.error(error);
+                    d.reject(error);
                 });
+                return d;
             });
+            
+            
+            var d2 = new Deferred();
+            thisB.store.getFeatures(region, function(feat) {
+                thisB.featStarts[feat.get('name')] = feat.get('start');
+            }, function(res) {
+                d2.resolve(res);
+            }, function(error) {
+                d2.reject(error);
+            });
+
+
+            return all([d1, d2]);
         },
 
         fillBlock: function(args) {
@@ -84,6 +89,10 @@ function(
             this.def.then(function() {
                 thisB.heightUpdate(thisB._canvasHeight(), args.blockIndex);
                 args.finishCallback();
+            }, function(error) {
+                console.error(error);
+                thisB.fatalError = error;
+                thisB.redraw();
             });
         },
 
@@ -98,7 +107,7 @@ function(
                 label: 'Refresh LD',
                 onClick: function() {
                     thisB.redrawView = true;
-                    thisB.getLD();
+                    thisB.def = thisB.getLD();
                     thisB.redraw();
                 }
             });
@@ -113,55 +122,50 @@ function(
 
         updateStaticElements: function(coords) {
             this.inherited(arguments);
-
-            if (coords.hasOwnProperty('x') && this.redrawView) {
-                this.redrawView = false;
-                var c = this.staticCanvas;
-                var context = c.getContext('2d');
-
-                c.width = this.browser.view.elem.clientWidth;
-                c.height = this._canvasHeight();
-                c.style.left = coords.x + 'px';
-                this.oldW = c.width;
-
-                var ratio = Util.getResolution(context, this.browser.config.highResolutionMode);
-                if (this.browser.config.highResolutionMode !== 'disabled' && ratio >= 1) {
-                    var oldWidth = c.width;
-                    var oldHeight = c.height;
-
-                    c.width = Math.round(oldWidth * ratio);
-                    c.height = Math.round(oldHeight * ratio);
-
-                    c.style.width = oldWidth + 'px';
-                    c.style.height = oldHeight + 'px';
-                    context.scale(ratio, ratio);
-                }
-                
-                context.clearRect(0, 0, this.staticCanvas.width, this.staticCanvas.height);
-
-                this.heightUpdate(this._canvasHeight(), 0);
-                this.initRender(true, this.oldW);
-            }
-            else if(coords.hasOwnProperty('x')) {
-                var context = this.staticCanvas.getContext('2d');
-
-                this.staticCanvas.style.left = coords.x + 'px';
-                context.clearRect(0, 0, this.staticCanvas.width, 80);
-
-                this.heightUpdate(this._canvasHeight(), 0);
-                this.initRender(false, this.oldW);
-            }
-        },
-        initRender: function(allData, w) {
             var thisB = this;
-            this.def.then(function() {
-                thisB.renderBox(allData, w);
+
+            this.def.then(function(res) {
+                if (coords.hasOwnProperty('x') && thisB.redrawView) {
+                    thisB.redrawView = false;
+                    var c = thisB.staticCanvas;
+                    var context = c.getContext('2d');
+
+                    c.width = thisB.browser.view.elem.clientWidth;
+                    c.height = thisB._canvasHeight();
+                    c.style.left = coords.x + 'px';
+                    thisB.oldW = c.width;
+
+                    var ratio = Util.getResolution(context, thisB.browser.config.highResolutionMode);
+                    if (thisB.browser.config.highResolutionMode !== 'disabled' && ratio >= 1) {
+                        var oldWidth = c.width;
+                        var oldHeight = c.height;
+
+                        c.width = Math.round(oldWidth * ratio);
+                        c.height = Math.round(oldHeight * ratio);
+
+                        c.style.width = oldWidth + 'px';
+                        c.style.height = oldHeight + 'px';
+                        context.scale(ratio, ratio);
+                    }
+                    
+                    context.clearRect(0, 0, c.width, c.height);
+
+                    thisB.heightUpdate(thisB._canvasHeight(), 0);
+                    thisB.renderBox(true, thisB.oldW);
+                } else if(coords.hasOwnProperty('x')) {
+                    var c = thisB.staticCanvas;
+                    var context = c.getContext('2d');
+
+                    c.style.left = coords.x + 'px';
+                    context.clearRect(0, 0, c.width, 80);
+
+                    thisB.heightUpdate(thisB._canvasHeight(), 0);
+                    thisB.renderBox(false, thisB.oldW);
+                }
             }, function(error) {
-                console.error(error);
                 thisB.fatalError = error.message;
             });
         },
-
 
         renderBox: function(allData, w) {
             var c = this.staticCanvas;
