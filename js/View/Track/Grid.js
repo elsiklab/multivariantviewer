@@ -55,7 +55,7 @@ function(
                 addRect: function(id, left, right, height, data) {
                     var ret = data.get('genotypes');
                     delete ret.toString;
-                    this.pTotalHeight = Object.keys(ret).length / 4 * thisB.config.style.height;
+                    this.pTotalHeight = Object.keys(ret).length / 4 * (thisB.config.style.height + (thisB.config.style.offset || 0));
                     return this.pTotalHeight;
                 }
             });
@@ -77,7 +77,7 @@ function(
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
                         var htmlnode = dojo.create('div', {
                             className: 'varianttrack-sublabel',
-                            id: thisB.config.label+'_'+key,
+                            id: thisB.config.label + '_' + key,
                             style: {
                                 position: 'absolute',
                                 height: c.style.height - 1 + 'px',
@@ -88,31 +88,30 @@ function(
                             innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
 
-                        if(c.clickTooltips) {
+                        if (c.clickTooltips) {
                             var tooltip = new TooltipDialog({
-                                id: 'tooltip_'+i,
-                                content:  key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
-                                onMouseLeave: function(){
+                                id: 'tooltip_' + i,
+                                content: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
+                                onMouseLeave: function() {
                                     popup.close(tooltip);
                                 }
                             });
 
-                            on(htmlnode, 'click', function(){
+                            on(htmlnode, 'click', function() {
                                 popup.open({
                                     popup: tooltip,
                                     around: htmlnode,
-                                    orient: ["after","below"]
+                                    orient: ['after', 'below']
                                 });
                             });
-                        }
-                        else {
+                        } else {
                             htmlnode.tooltip = new Tooltip({
-                                connectId: thisB.config.label+'_'+key,
+                                connectId: thisB.config.label + '_' + key,
                                 label: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
                                 showDelay: 0
                             });
                         }
-                        
+
                         return htmlnode;
                     });
                 });

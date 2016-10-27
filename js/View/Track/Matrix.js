@@ -122,7 +122,7 @@ function(
             });
         },
 
-        renderBox: function(allData, w, h) {
+        renderBox: function(allData, w /* , h */) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var region = this.browser.view.visibleRegion();
@@ -214,7 +214,7 @@ function(
                     thisB.redraw();
                 }
             });
-            if(this.labels) {
+            if (this.labels) {
                 opts.push({
                     label: 'Sort by population',
                     onClick: function() {

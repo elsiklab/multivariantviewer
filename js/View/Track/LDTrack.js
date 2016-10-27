@@ -69,8 +69,8 @@ function(
                 });
                 return d;
             });
-            
-            
+
+
             var d2 = new Deferred();
             thisB.store.getFeatures(region, function(feat) {
                 thisB.featStarts[feat.get('name')] = feat.get('start');
@@ -124,7 +124,7 @@ function(
             this.inherited(arguments);
             var thisB = this;
 
-            this.def.then(function(res) {
+            this.def.then(function() {
                 if (coords.hasOwnProperty('x') && thisB.redrawView) {
                     thisB.redrawView = false;
                     var c = thisB.staticCanvas;
@@ -147,12 +147,12 @@ function(
                         c.style.height = oldHeight + 'px';
                         context.scale(ratio, ratio);
                     }
-                    
+
                     context.clearRect(0, 0, c.width, c.height);
 
                     thisB.heightUpdate(thisB._canvasHeight(), 0);
                     thisB.renderBox(true, thisB.oldW);
-                } else if(coords.hasOwnProperty('x')) {
+                } else if (coords.hasOwnProperty('x')) {
                     var c = thisB.staticCanvas;
                     var context = c.getContext('2d');
 
@@ -177,7 +177,7 @@ function(
             var bw = boxw / Math.sqrt(2);
             var trans = (w / 2) - (snps.length * boxw / 2);
 
-            if(allData) {
+            if (allData) {
                 // render triangle rotated
                 ctx.save();
                 ctx.translate(trans, 90);
