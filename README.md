@@ -21,6 +21,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 * showLabels - Display subtrack labels (boolean)
 * showTooltips - Display mouseover tooltips with subtrack name and description (boolean)
+* clickTooltips - Display tooltips on click with subtrack name and description (boolean)
 * labelFont - Specify subtrack label font CSS e.g. "6px sans-serif"
 * labelWidth - Specify a specific width for all subtrack labels. Default autosizes to each sublabel's length, which can look ugly
 * sublabels - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover", "population": "CEU"}

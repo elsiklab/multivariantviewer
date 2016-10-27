@@ -2,17 +2,21 @@ define([
     'dojo/_base/declare',
     'dojo/_base/array',
     'dojo/_base/lang',
+    'dojo/on',
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
-    'dijit/Tooltip'
+    'dijit/TooltipDialog',
+    'dijit/popup'
 ],
 function(
     declare,
     array,
     lang,
+    on,
     CanvasFeatures,
     Util,
-    Tooltip
+    TooltipDialog,
+    popup
 ) {
     return declare([CanvasFeatures], {
         constructor: function() {
@@ -65,7 +69,7 @@ function(
                     if (thisB.config.sortByPopulation) {
                         keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                     }
-                    thisB.sublabels = array.map(header.samples, function(sample) {
+                    thisB.sublabels = array.map(header.samples, function(sample, i) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
@@ -81,11 +85,23 @@ function(
                             },
                             innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
-                        htmlnode.tooltip = new Tooltip({
-                            connectId: key,
-                            label: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
-                            showDelay: 0
+                        var tooltip = new TooltipDialog({
+                            id: 'tooltip_'+i,
+                            style: "width: 300px;",
+                            content:  key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
+                            onMouseLeave: function(){
+                                popup.close(tooltip);
+                            }
                         });
+
+                        on(htmlnode, thisB.config.clickTooltips?'click':'mouseover', function(){
+                            popup.open({
+                                popup: tooltip,
+                                around: htmlnode,
+                                orient: ["after","below"]
+                            });
+                        });
+                        
                         return htmlnode;
                     });
                 });
