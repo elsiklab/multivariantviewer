@@ -6,6 +6,7 @@ define([
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
     'dijit/TooltipDialog',
+    'dijit/Tooltip',
     'dijit/popup'
 ],
 function(
@@ -16,6 +17,7 @@ function(
     CanvasFeatures,
     Util,
     TooltipDialog,
+    Tooltip,
     popup
 ) {
     return declare([CanvasFeatures], {
@@ -85,22 +87,31 @@ function(
                             },
                             innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
-                        var tooltip = new TooltipDialog({
-                            id: 'tooltip_'+i,
-                            style: "width: 300px;",
-                            content:  key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
-                            onMouseLeave: function(){
-                                popup.close(tooltip);
-                            }
-                        });
 
-                        on(htmlnode, thisB.config.clickTooltips?'click':'mouseover', function(){
-                            popup.open({
-                                popup: tooltip,
-                                around: htmlnode,
-                                orient: ["after","below"]
+                        if(thisB.config.clickTooltip) {
+                            var tooltip = new TooltipDialog({
+                                id: 'tooltip_'+i,
+                                content:  key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
+                                onMouseLeave: function(){
+                                    popup.close(tooltip);
+                                }
                             });
-                        });
+
+                            on(htmlnode, 'click', function(){
+                                popup.open({
+                                    popup: tooltip,
+                                    around: htmlnode,
+                                    orient: ["after","below"]
+                                });
+                            });
+                        }
+                        else {
+                            htmlnode.tooltip = new Tooltip({
+                                connectId: key,
+                                label: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
+                                showDelay: 0
+                            });
+                        }
                         
                         return htmlnode;
                     });
