@@ -68,7 +68,7 @@ function(
             if (c.showLabels || c.showTooltips) {
                 this.store.getVCFHeader().then(function(header) {
                     var keys = header.samples;
-                    if (thisB.config.sortByPopulation) {
+                    if (c.sortByPopulation) {
                         keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                     }
                     thisB.sublabels = array.map(header.samples, function(sample, i) {
@@ -77,7 +77,7 @@ function(
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
                         var htmlnode = dojo.create('div', {
                             className: 'varianttrack-sublabel',
-                            id: key,
+                            id: thisB.config.label+'_'+key,
                             style: {
                                 position: 'absolute',
                                 height: c.style.height - 1 + 'px',
@@ -88,7 +88,7 @@ function(
                             innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
 
-                        if(thisB.config.clickTooltip) {
+                        if(c.clickTooltips) {
                             var tooltip = new TooltipDialog({
                                 id: 'tooltip_'+i,
                                 content:  key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
@@ -107,7 +107,7 @@ function(
                         }
                         else {
                             htmlnode.tooltip = new Tooltip({
-                                connectId: key,
+                                connectId: thisB.config.label+'_'+key,
                                 label: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
                                 showDelay: 0
                             });
