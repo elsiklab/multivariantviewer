@@ -5,7 +5,6 @@ define([
     'dojo/on',
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
-    'dijit/TooltipDialog',
     'dijit/Tooltip',
     'dijit/popup'
 ],
@@ -16,7 +15,6 @@ function(
     on,
     CanvasFeatures,
     Util,
-    TooltipDialog,
     Tooltip,
     popup
 ) {
@@ -88,29 +86,13 @@ function(
                             innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
 
-                        if (c.clickTooltips) {
-                            var tooltip = new TooltipDialog({
-                                id: 'tooltip_' + i,
-                                content: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
-                                onMouseLeave: function() {
-                                    popup.close(tooltip);
-                                }
-                            });
-
-                            on(htmlnode, 'click', function() {
-                                popup.open({
-                                    popup: tooltip,
-                                    around: htmlnode,
-                                    orient: ['after', 'below']
-                                });
-                            });
-                        } else {
-                            htmlnode.tooltip = new Tooltip({
-                                connectId: thisB.config.label + '_' + key,
-                                label: key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),
-                                showDelay: 0
-                            });
-                        }
+                        on(htmlnode, c.clickTooltips?'click':'mouseover', function() {
+                            Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),htmlnode);
+                             
+                        });
+                        on.once(htmlnode, 'mouseleave', function(){
+                            Tooltip.hide(htmlnode);
+                        });
 
                         return htmlnode;
                     });

@@ -17810,8 +17810,7 @@
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "MultiVariantViewer/View/Track/Grid",
       "style": {
-        "height": 12,
-        "offset": 1
+        "height": 12
       },
       "sublabels": [
           {
