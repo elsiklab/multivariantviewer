@@ -7,7 +7,7 @@ define([
     'JBrowse/Util',
     'dijit/Tooltip'
 ],
-function(
+function (
     declare,
     array,
     lang,
@@ -17,21 +17,21 @@ function(
     Tooltip
 ) {
     return declare([CanvasFeatures], {
-        constructor: function() {
+        constructor: function () {
             this.labels = {};
             if (this.config.sublabels) {
-                this.config.sublabels.forEach(function(elt) {
+                this.config.sublabels.forEach(function (elt) {
                     this.labels[elt.name] = elt;
                 }, this);
             }
         },
 
-        _defaultConfig: function() {
+        _defaultConfig: function () {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
                 style: {
                     height: 5,
-                    matrixColor: function(feat, gt, gtString) {
+                    matrixColor: function (feat, gt, gtString) {
                         if (gt === 'ref') {
                             return '#aaa';
                         } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
@@ -44,11 +44,11 @@ function(
         },
 
         // override getLayout to access addRect method
-        _getLayout: function() {
+        _getLayout: function () {
             var thisB = this;
             var layout = this.inherited(arguments);
             return declare.safeMixin(layout, {
-                addRect: function(id, left, right, height, data) {
+                addRect: function (id, left, right, height, data) {
                     var ret = data.get('genotypes');
                     delete ret.toString;
                     this.pTotalHeight = Object.keys(ret).length / 4 * (thisB.config.style.height + (thisB.config.style.offset || 0));
@@ -57,17 +57,17 @@ function(
             });
         },
 
-        makeTrackLabel: function() {
+        makeTrackLabel: function () {
             var thisB = this;
             var c = this.config;
 
             if (c.showLabels || c.showTooltips) {
-                this.store.getVCFHeader().then(function(header) {
+                this.store.getVCFHeader().then(function (header) {
                     var keys = header.samples;
                     if (c.sortByPopulation) {
-                        keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
+                        keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                     }
-                    thisB.sublabels = array.map(header.samples, function(sample, i) {
+                    thisB.sublabels = array.map(header.samples, function (sample, i) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
@@ -84,11 +84,10 @@ function(
                             innerHTML: c.showLabels ? key : ''
                         }, thisB.div);
 
-                        on(htmlnode, c.clickTooltips?'click':'mouseover', function() {
-                            Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''),htmlnode);
-                             
+                        on(htmlnode, c.clickTooltips ? 'click' : 'mouseover', function () {
+                            Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''), htmlnode);
                         });
-                        on.once(htmlnode, 'mouseleave', function(){
+                        on.once(htmlnode, 'mouseleave', function () {
                             Tooltip.hide(htmlnode);
                         });
 
@@ -100,12 +99,12 @@ function(
             this.inherited(arguments);
         },
 
-        updateStaticElements: function(coords) {
+        updateStaticElements: function (coords) {
             this.inherited(arguments);
             if (this.sublabels && 'x' in coords) {
                 var height = this.config.style.height + (this.config.style.offset || 0);
                 var len = this.sublabels.length;
-                array.forEach(this.sublabels, function(sublabel, i) {
+                array.forEach(this.sublabels, function (sublabel, i) {
                     sublabel.style.left = coords.x + 'px';
                     sublabel.style.top = i * height + 'px';
                     if (i === len - 1) {

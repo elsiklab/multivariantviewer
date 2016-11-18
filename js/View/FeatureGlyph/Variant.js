@@ -4,17 +4,17 @@ define([
     'dojo/_base/lang',
     'JBrowse/View/FeatureGlyph/Box'
 ],
-function(
+function (
     declare,
     array,
     lang,
     FeatureGlyph
 ) {
     return declare(FeatureGlyph, {
-        getColor: function(feature, genotype, genotypeFull) {
+        getColor: function (feature, genotype, genotypeFull) {
             return this.getConf('style.matrixColor', [feature, genotype, genotypeFull]);
         },
-        renderFeature: function(context, fRect) {
+        renderFeature: function (context, fRect) {
             if (fRect.f.get('type') !== 'SNV') return null;
 
             var genotypes = fRect.f.get('genotypes');
@@ -25,10 +25,10 @@ function(
             var keys = Object.keys(genotypes);
             var thisB = this;
             if (this.config.sortByPopulation) {
-                keys.sort(function(a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); });
+                keys.sort(function (a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); });
             }
 
-            keys.forEach(function(key, ret) {
+            keys.forEach(function (key, ret) {
                 var col;
                 if (genotypes[key].GT) {
                     var valueParse = genotypes[key].GT.values[0];
@@ -43,7 +43,7 @@ function(
                     col = color(fRect.f, 'ref');
                 }
                 var offset = ret * (style(fRect.f, 'height') + (style(fRect.f, 'offset') || 0));
-                this.renderBox(context, fRect.viewInfo, fRect.f, offset, height, fRect.f, function() { return col; });
+                this.renderBox(context, fRect.viewInfo, fRect.f, offset, height, fRect.f, function () { return col; });
             }, this);
 
             return 0;

@@ -10,7 +10,7 @@ define([
     'dojo/Deferred',
     'dojo/promise/all'
 ],
-function(
+function (
     declare,
     array,
     lang,
@@ -23,36 +23,36 @@ function(
     all
 ) {
     return declare(BlockBased, {
-        constructor: function() {
+        constructor: function () {
             this.redrawView = true;
             this.def = this.getLD();
         },
 
-        getLD: function() {
+        getLD: function () {
             var ref;
             var thisB = this;
             var region = this.browser.view.visibleRegion();
             this.featStarts = {};
 
             // use this promise chain to get original names of refseq in vcf
-            var d1 = this.store.getVCFHeader().then(function() {
+            var d1 = this.store.getVCFHeader().then(function () {
                 var d = new Deferred();
                 thisB.store.indexedData.getLines(
                     region.ref,
                     region.start,
                     region.end,
-                    function(line) {
+                    function (line) {
                         ref = line.ref;
                     },
-                    function(res) {
+                    function (res) {
                         d.resolve(res);
                     },
-                    function(error) {
+                    function (error) {
                         d.reject(error);
                     }
                 );
                 return d;
-            }).then(function() {
+            }).then(function () {
                 var query = {
                     ref: ref,
                     start: region.start,
@@ -61,10 +61,10 @@ function(
                     maf: thisB.config.maf
                 };
                 var d = new Deferred();
-                request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function(res) {
+                request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function (res) {
                     thisB.results = thisB.parseResults(res);
                     d.resolve();
-                }, function(error) {
+                }, function (error) {
                     d.reject(error);
                 });
                 return d;
@@ -72,11 +72,11 @@ function(
 
 
             var d2 = new Deferred();
-            thisB.store.getFeatures(region, function(feat) {
+            thisB.store.getFeatures(region, function (feat) {
                 thisB.featStarts[feat.get('name')] = feat.get('start');
-            }, function(res) {
+            }, function (res) {
                 d2.resolve(res);
-            }, function(error) {
+            }, function (error) {
                 d2.reject(error);
             });
 
@@ -84,28 +84,28 @@ function(
             return all([d1, d2]);
         },
 
-        fillBlock: function(args) {
+        fillBlock: function (args) {
             var thisB = this;
-            this.def.then(function() {
+            this.def.then(function () {
                 thisB.heightUpdate(thisB._canvasHeight(), args.blockIndex);
                 args.finishCallback();
-            }, function(error) {
+            }, function (error) {
                 console.error(error);
                 thisB.fatalError = error;
                 thisB.redraw();
             });
         },
 
-        _canvasHeight: function() {
+        _canvasHeight: function () {
             return +((this.config.style || {}).height) || 520;
         },
 
-        _trackMenuOptions: function() {
+        _trackMenuOptions: function () {
             var opts = this.inherited(arguments);
             var thisB = this;
             opts.push({
                 label: 'Refresh LD',
-                onClick: function() {
+                onClick: function () {
                     thisB.redrawView = true;
                     thisB.def = thisB.getLD();
                     thisB.redraw();
@@ -115,16 +115,16 @@ function(
             return opts;
         },
 
-        setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv) {
+        setViewInfo: function (genomeView, heightUpdate, numBlocks, trackDiv) {
             this.inherited(arguments);
             this.staticCanvas = dom.create('canvas', { style: { cursor: 'default', position: 'absolute', zIndex: 15 }}, trackDiv);
         },
 
-        updateStaticElements: function(coords) {
+        updateStaticElements: function (coords) {
             this.inherited(arguments);
             var thisB = this;
 
-            this.def.then(function() {
+            this.def.then(function () {
                 if (coords.hasOwnProperty('x') && thisB.redrawView) {
                     thisB.redrawView = false;
                     var c = thisB.staticCanvas;
@@ -162,12 +162,12 @@ function(
                     thisB.heightUpdate(thisB._canvasHeight(), 0);
                     thisB.renderBox(false, thisB.oldW);
                 }
-            }, function(error) {
+            }, function (error) {
                 thisB.fatalError = error.message;
             });
         },
 
-        renderBox: function(allData, w) {
+        renderBox: function (allData, w) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var scores = this.results.scores;
@@ -213,7 +213,7 @@ function(
             ctx.restore();
         },
 
-        parseResults: function(res) {
+        parseResults: function (res) {
             var j = 0;
             var line;
             var snps = [];

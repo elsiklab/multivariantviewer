@@ -9,7 +9,7 @@ define([
     'JBrowse/Util',
     'dojo/Deferred'
 ],
-function(
+function (
     declare,
     array,
     lang,
@@ -21,28 +21,28 @@ function(
     Deferred
 ) {
     return declare(BlockBased, {
-        constructor: function(args) {
+        constructor: function (args) {
             this.labels = {};
             this.redrawView = true;
             this.browser = args.browser;
 
             if (this.config.sublabels) {
-                this.config.sublabels.forEach(function(elt) {
+                this.config.sublabels.forEach(function (elt) {
                     this.labels[elt.name] = elt;
                 }, this);
             }
             this.getVariants();
         },
 
-        fillBlock: function(args) {
+        fillBlock: function (args) {
             var thisB = this;
-            this.def.then(function() {
+            this.def.then(function () {
                 thisB.heightUpdate(thisB._canvasHeight(), args.blockIndex);
             });
             args.finishCallback();
         },
 
-        _canvasHeight: function() {
+        _canvasHeight: function () {
             if (this.snps[0]) {
                 var g = this.snps[0].get('genotypes');
                 delete g.toString;
@@ -51,7 +51,7 @@ function(
             return 0;
         },
 
-        _defaultConfig: function() {
+        _defaultConfig: function () {
             return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
                 style: {
                     elt: 1
@@ -59,15 +59,15 @@ function(
             }));
         },
 
-        setViewInfo: function(genomeView, heightUpdate, numBlocks, trackDiv) {
+        setViewInfo: function (genomeView, heightUpdate, numBlocks, trackDiv) {
             this.inherited(arguments);
             this.staticCanvas = dom.create('canvas', { style: { cursor: 'default', position: 'absolute', zIndex: 15 }}, trackDiv);
         },
 
-        updateStaticElements: function(coords) {
+        updateStaticElements: function (coords) {
             var thisB = this;
             this.inherited(arguments);
-            this.def.then(function() {
+            this.def.then(function () {
                 var ratio = Util.getResolution(context, thisB.browser.config.highResolutionMode);
                 if (coords.hasOwnProperty('x') && thisB.redrawView) {
                     thisB.redrawView = false;
@@ -106,23 +106,23 @@ function(
         },
 
 
-        getVariants: function() {
+        getVariants: function () {
             var thisB = this;
             this.snps = [];
             this.def = new Deferred();
             var region = this.browser.view.visibleRegion();
-            this.store.getFeatures(region, function(feat) {
+            this.store.getFeatures(region, function (feat) {
                 thisB.snps.push(feat);
-            }, function() {
+            }, function () {
                 thisB.def.resolve();
-            }, function(error) {
+            }, function (error) {
                 console.error(error);
                 thisB.fatalError = error;
                 thisB.def.reject(error);
             });
         },
 
-        renderBox: function(allData, w /* , h */) {
+        renderBox: function (allData, w /* , h */) {
             var c = this.staticCanvas;
             var ctx = c.getContext('2d');
             var region = this.browser.view.visibleRegion();
@@ -145,7 +145,7 @@ function(
                 delete g.toString;
                 var keys = Object.keys(g);
                 if (this.config.sortByPopulation) {
-                    keys.sort(function(a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
+                    keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                 }
 
                 for (var j = 0; j < snps.length; j++) {
@@ -203,12 +203,12 @@ function(
             ctx.restore();
         },
 
-        _trackMenuOptions: function() {
+        _trackMenuOptions: function () {
             var opts = this.inherited(arguments);
             var thisB = this;
             opts.push({
                 label: 'Refresh matrix',
-                onClick: function() {
+                onClick: function () {
                     thisB.redrawView = true;
                     thisB.getVariants();
                     thisB.redraw();
@@ -217,7 +217,7 @@ function(
             if (this.labels) {
                 opts.push({
                     label: 'Sort by population',
-                    onClick: function() {
+                    onClick: function () {
                         thisB.config.sortByPopulation = true;
                         thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
                     }
