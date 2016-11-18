@@ -5,8 +5,7 @@ define([
     'dojo/on',
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/Util',
-    'dijit/Tooltip',
-    'dijit/popup'
+    'dijit/Tooltip'
 ],
 function(
     declare,
@@ -15,8 +14,7 @@ function(
     on,
     CanvasFeatures,
     Util,
-    Tooltip,
-    popup
+    Tooltip
 ) {
     return declare([CanvasFeatures], {
         constructor: function() {
