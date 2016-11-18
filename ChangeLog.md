@@ -1,3 +1,7 @@
+# Version 0.5.0
+
+- Remove TooltipDialog class due to conflicts with official jbrowse releases. Thanks to @carrere for reporting
+
 # Version 0.4.0
 
 - Added clickTooltips option
