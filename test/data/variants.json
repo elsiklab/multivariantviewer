@@ -23763,7 +23763,16 @@
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
         "type": "MultiVariantViewer/View/Track/Grid",
         "style": {
-            "matrixColor": "function(feat, ref, gt) { console.log(feat,ref,gt); if(ref=='ref') { return 'blue'; } else return 'red'; }"
+            "matrixColor": "function(feat, ref, gt) { if(ref=='ref') { return 'blue'; } else return 'red'; }"
+        }
+    },
+    {
+        "label": "haploid (altcall format)",
+        "urlTemplate": "altcall.vcf.gz",
+        "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+        "type": "MultiVariantViewer/View/Track/Grid",
+        "style": {
+            "matrixColor": "function(feat, ref, gt) { if(ref=='ref') { return 'blue'; } else return 'red'; }"
         }
     }
   ]

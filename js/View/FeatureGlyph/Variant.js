@@ -34,12 +34,20 @@ function (
                     var valueParse = genotypes[key].GT.values[0];
                     var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                     var split = valueParse.split(splitter);
-                    if (!split) {
-                        col = color(fRect.f, 'ref');
-                    } else if ((+split[0] !== 0   || +split[1] !== 0) && (split[0] !== '.' || split[1] !== '.')) {
-                        col = color(fRect.f, 'alt', valueParse);
-                    } else {
-                        col = color(fRect.f, 'ref', valueParse);
+                    if(!splitter) {
+                        if(valueParse == '0') {
+                            col = color(fRect.f, 'ref', valueParse);
+                        }
+                        else {
+                            col = color(fRect.f, 'alt', valueParse);
+                        }
+                    }
+                    else {
+                        if ((+split[0] !== 0 || +split[1] !== 0) && (split[0] !== '.' || split[1] !== '.')) {
+                            col = color(fRect.f, 'alt', valueParse);
+                        } else {
+                            col = color(fRect.f, 'ref', valueParse);
+                        }
                     }
                 } else {
                     col = color(fRect.f, 'ref');

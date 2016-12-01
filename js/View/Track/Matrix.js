@@ -158,16 +158,22 @@ function (
                             var valueParse = genotypes[key].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                             var split = valueParse.split(splitter);
-                            if (!split) {
-                                col = '#aaa';
-                            } else if (split[0] != null && split[1] == null) {
-                                col = 'blue';
-                            } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                                col = 'blue';
-                            } else if (+split[0] !== +split[1]) {
-                                col = 'cyan';
-                            } else {
-                                col = '#aaa';
+                            if(!splitter) {
+                                if(valueParse == '0') {
+                                    col = '#aaa';
+                                }
+                                else {
+                                    col = 'blue';
+                                }
+                            }
+                            else {
+                                if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                                    col = 'blue';
+                                } else if (+split[0] !== +split[1]) {
+                                    col = 'cyan';
+                                } else {
+                                    col = '#aaa';
+                                }
                             }
                         } else {
                             col = '#aaa';
