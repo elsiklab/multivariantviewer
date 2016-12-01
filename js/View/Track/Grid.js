@@ -116,7 +116,7 @@ function (
         _trackMenuOptions: function () {
             var opts = this.inherited(arguments);
             var thisB = this;
-            if (this.labels) {
+            if (this.config.sublabels && this.config.sublabels[0].population) {
                 opts.push({
                     label: 'Sort by population',
                     type: 'dijit/CheckedMenuItem',

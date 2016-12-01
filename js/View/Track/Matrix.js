@@ -217,7 +217,7 @@ function (
                     thisB.redraw();
                 }
             });
-            if (this.labels) {
+            if (this.config.sublabels && this.config.sublabels[0].population) {
                 opts.push({
                     label: 'Sort by population',
                     checked: !! thisB.config.sortByPopulation,
