@@ -23724,6 +23724,12 @@
             "color": "#1bf965"
           }
         ]
+    },
+    {
+        "label": "haploid",
+        "urlTemplate": "out.vcf.gz",
+        "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+        "type": "MultiVariantViewer/View/Track/Grid"
     }
   ]
 }
