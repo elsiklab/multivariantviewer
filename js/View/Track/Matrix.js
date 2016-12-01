@@ -158,10 +158,10 @@ function (
                             var valueParse = genotypes[key].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                             var split = valueParse.split(splitter);
-                            if(split == "") {
+                            if (split == '') {
                                 col = '#aaa';
-                            } else if(split[0] != null && split[1] == null) {
-                                col = 'blue'
+                            } else if (split[0] != null && split[1] == null) {
+                                col = 'blue';
                             } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
                                 col = 'blue';
                             } else if (+split[0] !== +split[1]) {
@@ -220,8 +220,9 @@ function (
             if (this.labels) {
                 opts.push({
                     label: 'Sort by population',
+                    checked: !! thisB.config.sortByPopulation,
                     onClick: function () {
-                        thisB.config.sortByPopulation = true;
+                        thisB.config.sortByPopulation = !thisB.config.sortByPopulation;
                         thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
                     }
                 });

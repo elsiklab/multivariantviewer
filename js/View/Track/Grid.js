@@ -63,11 +63,11 @@ function (
 
             if (c.showLabels || c.showTooltips) {
                 this.store.getVCFHeader().then(function (header) {
-                    var keys = header.samples;
+                    var keys = dojo.clone(header.samples);
                     if (c.sortByPopulation) {
                         keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                     }
-                    thisB.sublabels = array.map(header.samples, function (sample, i) {
+                    thisB.sublabels = array.map(keys, function (sample, i) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
@@ -112,6 +112,24 @@ function (
                     }
                 });
             }
+        },
+        _trackMenuOptions: function () {
+            var opts = this.inherited(arguments);
+            var thisB = this;
+            if (this.labels) {
+                opts.push({
+                    label: 'Sort by population',
+                    type: 'dijit/CheckedMenuItem',
+                    checked: !! thisB.config.sortByPopulation,
+                    onClick: function () {
+                        thisB.config.sortByPopulation = !thisB.config.sortByPopulation;
+                        thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
+                        thisB.redraw();
+                    }
+                });
+            }
+
+            return opts;
         }
     });
 });
