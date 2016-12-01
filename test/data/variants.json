@@ -23730,6 +23730,32 @@
         "urlTemplate": "out.vcf.gz",
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
         "type": "MultiVariantViewer/View/Track/Grid"
+    },
+    {
+        "style": {
+            "elt": 5
+        },
+        "label": "haploid matrix",
+        "urlTemplate": "out.vcf.gz",
+        "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+        "type": "MultiVariantViewer/View/Track/Matrix",
+        "sublabels": [
+          {
+            "population": "Pane",
+            "name": "Pane",
+            "color": "#8aeac5"
+          },
+          {
+            "population": "Pcol",
+            "name": "Pcol",
+            "color": "#8a3ac5"
+          },
+          {
+            "population": "Prug",
+            "name": "Prug",
+            "color": "#8a8ac5"
+          }
+        ]
     }
   ]
 }

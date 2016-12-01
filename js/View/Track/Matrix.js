@@ -46,7 +46,7 @@ function (
             if (this.snps[0]) {
                 var g = this.snps[0].get('genotypes');
                 delete g.toString;
-                return Object.keys(g).length * this.config.style.elt;
+                return Object.keys(g).length * this.config.style.elt + 80;
             }
             return 0;
         },
@@ -158,8 +158,11 @@ function (
                             var valueParse = genotypes[key].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                             var split = valueParse.split(splitter);
-
-                            if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                            if(split == "") {
+                                col = '#aaa';
+                            } else if(split[0] != null && split[1] == null) {
+                                col = 'blue'
+                            } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
                                 col = 'blue';
                             } else if (+split[0] !== +split[1]) {
                                 col = 'cyan';
@@ -170,7 +173,7 @@ function (
                             col = '#aaa';
                         }
                         ctx.fillStyle = col;
-                        ctx.fillRect(j * boxw, i * elt, boxw + 0.6, boxw + 0.6);
+                        ctx.fillRect(j * boxw, i * elt, boxw + 0.6, elt + 0.6);
                         ctx.fill();
                     }
                 }
@@ -182,7 +185,7 @@ function (
                     for (var i = 0; i < keys.length; i++) {
                         var f = keys[i].trim();
                         ctx.fillStyle = this.labels[f].color;
-                        ctx.fillRect(0, i * elt, 10, boxw + 0.6);
+                        ctx.fillRect(0, i * elt, 10, elt + 0.6);
                     }
                 }
                 ctx.restore();
