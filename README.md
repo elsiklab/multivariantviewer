@@ -57,7 +57,7 @@ In trackList.json format
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
         "style": {
             "height": 1,
-            "color": "function(feat, gt) { return gt == 'ref'? 'blue': 'orange'; }"
+            "matrixColor": "function(feat, gt) { return gt == 'ref'? 'blue': 'orange'; }"
         }
     }
 
