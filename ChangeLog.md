@@ -1,3 +1,9 @@
+# Version 0.6.0
+
+- Adds improved handling of haploid vcf. Thanks to @sravel for testing
+- Fixes bug with the height of the track in the Matrix track type
+- Fixes bug with the sort by population option. Thanks to @sravel for pointing out
+
 # Version 0.5.0
 
 - Remove TooltipDialog class due to conflicts with official jbrowse releases. Thanks to @carrere for reporting
