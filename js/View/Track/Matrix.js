@@ -158,7 +158,7 @@ function (
                             var valueParse = genotypes[key].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                             var split = valueParse.split(splitter);
-                            if (split == '') {
+                            if (!split) {
                                 col = '#aaa';
                             } else if (split[0] != null && split[1] == null) {
                                 col = 'blue';
