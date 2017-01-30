@@ -55,10 +55,7 @@ In trackList.json format
         "urlTemplate": "variants.vcf.gz",
         "label": "Variant track",
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
-        "style": {
-            "height": 1,
-            "matrixColor": "function(feat, gt) { return gt == 'ref'? 'blue': 'orange'; }"
-        }
+        "showLabels" true
     }
 
 ## Sample
