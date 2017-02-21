@@ -4,6 +4,7 @@ define([
     'dojo/_base/lang',
     'dojo/on',
     'JBrowse/View/Track/CanvasFeatures',
+    'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
     'dijit/Tooltip'
 ],
@@ -13,6 +14,7 @@ function (
     lang,
     on,
     CanvasFeatures,
+    BlockBased,
     Util,
     Tooltip
 ) {
@@ -71,7 +73,6 @@ function (
                     if (c.sortByPopulation) {
                         keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                     }
-                    console.log(keys.length)
                     thisB.sublabels = array.map(keys, function (sample, i) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
@@ -105,6 +106,7 @@ function (
         },
 
         updateStaticElements: function (coords) {
+            BlockBased.prototype.updateStaticElements.apply(this, arguments);
             if (this.sublabels && 'x' in coords) {
                 var height = this.config.style.height + (this.config.style.offset || 0);
                 var len = this.sublabels.length;
