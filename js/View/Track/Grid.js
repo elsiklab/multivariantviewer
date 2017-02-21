@@ -16,7 +16,7 @@ function (
     Util,
     Tooltip
 ) {
-    return declare([CanvasFeatures], {
+    return declare(CanvasFeatures, {
         constructor: function () {
             this.labels = {};
             if (this.config.sublabels) {
@@ -31,6 +31,10 @@ function (
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
                 style: {
                     height: 5,
+                    simpleColors: true,
+                    ref: '#aaa',
+                    heterozygous: 'cyan',
+                    homozygous: 'blue',
                     matrixColor: function (feat, gt, gtString) {
                         if (gt === 'ref') {
                             return '#aaa';
@@ -67,6 +71,7 @@ function (
                     if (c.sortByPopulation) {
                         keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
                     }
+                    console.log(keys.length)
                     thisB.sublabels = array.map(keys, function (sample, i) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
@@ -100,7 +105,6 @@ function (
         },
 
         updateStaticElements: function (coords) {
-            this.inherited(arguments);
             if (this.sublabels && 'x' in coords) {
                 var height = this.config.style.height + (this.config.style.offset || 0);
                 var len = this.sublabels.length;
@@ -130,6 +134,14 @@ function (
             }
 
             return opts;
+        },
+        setViewInfo: function() {
+            this.inherited( arguments );
+            delete this.staticCanvas;
+        },
+        _connectEventHandlers: function() {
+        },
+        _attachMouseOverEvents: function() {
         }
     });
 });
