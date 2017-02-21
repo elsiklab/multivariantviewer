@@ -33,10 +33,6 @@ function (
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
                 style: {
                     height: 5,
-                    simpleColors: true,
-                    ref: '#aaa',
-                    heterozygous: 'cyan',
-                    homozygous: 'blue',
                     matrixColor: function (feat, gt, gtString) {
                         if (gt === 'ref') {
                             return '#aaa';
@@ -93,9 +89,10 @@ function (
                         on(htmlnode, c.clickTooltips ? 'click' : 'mouseover', function () {
                             Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''), htmlnode);
                         });
-                        on.once(htmlnode, 'mouseleave', function () {
+                        on(htmlnode, 'mouseleave', function () {
                             Tooltip.hide(htmlnode);
                         });
+
 
                         return htmlnode;
                     });
