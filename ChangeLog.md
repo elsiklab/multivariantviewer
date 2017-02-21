@@ -1,3 +1,11 @@
+# Version 0.7.0
+
+- Fixed tooltips not disappearing
+- Added `ref_color`, `het_color`, and `hom_color` options to make it easier to style, matrixColor remains as backup
+- Made height by default 12
+- Made showLabels and showTooltips true by default
+- Optimized the rendering somewhat
+
 # Version 0.6.0
 
 - Adds improved handling of haploid vcf. Thanks to @sravel for testing

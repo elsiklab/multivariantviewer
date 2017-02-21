@@ -11879,7 +11879,16 @@
       "maf": 0.05
     },
     {
-      "label": "1000 genomes phase 1 grid",
+      "label": "1000 genomes phase 1 grid (no color on sublabels)",
+      "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
+      "urlTemplate": "volvox.test.vcf.gz",
+      "type": "MultiVariantViewer/View/Track/Grid",
+      "style": {
+        "height": 12
+      }
+    },
+    {
+      "label": "1000 genomes phase 1 grid (click for tooltip)",
       "showLabels": true,
       "showTooltips": true,
       "clickTooltips": true,
@@ -17803,9 +17812,8 @@
         ]
     },
     {
-      "label": "1000 genomes phase 1 grid mouseover",
-      "showLabels": true,
-      "showTooltips": true,
+      "label": "1000 genomes phase 1 grid (mouseover tooltip)",
+      "showLabels": false,
       "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "MultiVariantViewer/View/Track/Grid",

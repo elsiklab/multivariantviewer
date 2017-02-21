@@ -13,21 +13,30 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ### Style options
 
-* style->height - Pixel height for each sample. Default: 5
-* style->offset - Pixel offset between each sample. Default: 0
-* style->matrixColor - A color or a callback that returns colors for both the grid type and the matrix popup. Default: cyan is heterozygous non-ref, grey homozygous ref, blue is homozygous non-ref. Can be customized by a callback with the a function signature `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
+* `style->height` - Pixel height for each sample. Default: 5
+* `style->offset` - Pixel offset between each sample. Default: 0
+* `style->ref_color` - Color for reference allele. Default grey
+* `style->het_color` - Color for heterozygous allele. Default cyan
+* `style->hom_color` - Color for homozygous allele. Default blue
+* `style->matrixColor` - If you make ref_color, het_color, and hom_color null, then this function is called to determine the color. See below for function prototype
 
-### Subtrack label options
 
-* showLabels - Display subtrack labels (boolean)
-* showTooltips - Display mouseover tooltips with subtrack name and description (boolean)
-* clickTooltips - Display tooltips on click instead of mouseover if showTooltips is true (boolean)
-* labelFont - Specify subtrack label font CSS e.g. "6px sans-serif"
-* labelWidth - Specify a specific width for all subtrack labels. Default autosizes to each sublabel's length, which can look ugly
-* sublabels - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover", "population": "CEU"}
-* sortByPopulation - Sorts genotypes by population
+The matrixColor callback can change those colors if ref_color/het_color/hom_color are set to null. The matrixColor function signature is `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
 
-The sublabels are optional and default to just showing the sample names if not specified
+### Grid specific options
+
+* `showLabels` - Display subtrack labels (default: true)
+* `showTooltips` - Display mouseover tooltips with subtrack name and description (default: true)
+* `clickTooltips` - Display tooltips on click instead of mouseover if showTooltips is true (default: false)
+* `labelFont` - Specify subtrack label font CSS e.g. "6px sans-serif"
+* `labelWidth` - Specify a specific width for all subtrack labels. Default autosizes to each sublabel's length, which can look ugly
+
+### Grid and matrix options
+
+* `sublabels` - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover", "population": "CEU"}
+* `sortByPopulation` - Sorts genotypes by population. Also available from track menu
+
+The sublabels are optional, and the sample names from the VCF are shown if not specified, but coloring the labels and things can be added via sublabels
 
 ### LD viewing options
 

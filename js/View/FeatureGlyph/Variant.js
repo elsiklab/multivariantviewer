@@ -36,21 +36,23 @@ function (
                     var split = valueParse.split(splitter);
                     if(!splitter) {
                         if(valueParse == '0') {
-                            col = color(fRect.f, 'ref', valueParse);
+                            col = this.config.style.ref_color || color(fRect.f, 'ref', valueParse);
                         }
                         else {
-                            col = color(fRect.f, 'alt', valueParse);
+                            col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
                         }
                     }
                     else {
-                        if ((+split[0] !== 0 || +split[1] !== 0) && (split[0] !== '.' || split[1] !== '.')) {
-                            col = color(fRect.f, 'alt', valueParse);
+                        if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                            col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
+                        } else if (+split[0] !== +split[1]) {
+                            col = this.config.style.het_color || color(fRect.f, 'alt', valueParse);
                         } else {
-                            col = color(fRect.f, 'ref', valueParse);
+                            col = this.config.style.ref_color || color(fRect.f, 'ref', valueParse);
                         }
                     }
                 } else {
-                    col = color(fRect.f, 'ref');
+                    col = this.config.style.ref_color || color(fRect.f, 'ref');
                 }
                 var offset = ret * (style(fRect.f, 'height') + (style(fRect.f, 'offset') || 0));
                 this.renderBox(context, fRect.viewInfo, fRect.f, offset, height, fRect.f, function () { return col; });

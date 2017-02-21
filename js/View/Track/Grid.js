@@ -31,8 +31,13 @@ function (
         _defaultConfig: function () {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'MultiVariantViewer/View/FeatureGlyph/Variant',
+                showLabels: true,
+                showTooltips: true,
                 style: {
-                    height: 5,
+                    height: 12,
+                    ref_color: '#aaa',
+                    het_color: 'cyan',
+                    hom_color: 'blue',
                     matrixColor: function (feat, gt, gtString) {
                         if (gt === 'ref') {
                             return '#aaa';

@@ -54,7 +54,10 @@ function (
         _defaultConfig: function () {
             return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
                 style: {
-                    elt: 1
+                    elt: 1,
+                    ref_color: '#aaa',
+                    hom_color: 'blue',
+                    het_color: 'cyan'
                 }
             }));
         },
@@ -160,23 +163,23 @@ function (
                             var split = valueParse.split(splitter);
                             if(!splitter) {
                                 if(valueParse == '0') {
-                                    col = '#aaa';
+                                    col = this.config.style.ref_color;
                                 }
                                 else {
-                                    col = 'blue';
+                                    col = this.config.style.hom_color;
                                 }
                             }
                             else {
                                 if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                                    col = 'blue';
+                                    col = this.config.style.hom_color;
                                 } else if (+split[0] !== +split[1]) {
-                                    col = 'cyan';
+                                    col = this.config.style.het_color;
                                 } else {
-                                    col = '#aaa';
+                                    col = this.config.style.ref_color;
                                 }
                             }
                         } else {
-                            col = '#aaa';
+                            col = this.config.style.ref_color;
                         }
                         ctx.fillStyle = col;
                         ctx.fillRect(j * boxw, i * elt, boxw + 0.6, elt + 0.6);
