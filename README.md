@@ -30,6 +30,7 @@ The matrixColor callback can change those colors if ref_color/het_color/hom_colo
 * `clickTooltips` - Display tooltips on click instead of mouseover if showTooltips is true (default: false)
 * `labelFont` - Specify subtrack label font CSS e.g. "6px sans-serif"
 * `labelWidth` - Specify a specific width for all subtrack labels. Default autosizes to each sublabel's length, which can look ugly
+* `includeIndels` - Include indels. Default false since if these are overlapping it will complicate the display. By default only renders things with type SNV
 
 ### Grid and matrix options
 

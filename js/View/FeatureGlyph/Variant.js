@@ -15,7 +15,7 @@ function (
             return this.getConf('style.matrixColor', [feature, genotype, genotypeFull]);
         },
         renderFeature: function (context, fRect) {
-            if (fRect.f.get('type') !== 'SNV') return null;
+            if (!this.config.includeIndels && fRect.f.get('type') !== 'SNV') return null;
 
             var genotypes = fRect.f.get('genotypes');
             delete genotypes.toString;
