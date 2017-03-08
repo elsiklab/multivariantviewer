@@ -139,7 +139,7 @@ function (
         fillBlock: function(args) {
             var thisB = this;
             this.store.getVCFHeader().then(function (header) {
-                thisB.totalHeight = Object.keys(header.samples).length / 4 * (thisB.config.style.height + (thisB.config.style.offset || 0));
+                thisB.totalHeight = header.samples.length * (thisB.config.style.height + (thisB.config.style.offset || 0));
                 thisB.heightUpdate(thisB.totalHeight, args.blockIndex);
             });
             this.inherited(arguments);
