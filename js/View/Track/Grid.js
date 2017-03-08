@@ -55,11 +55,8 @@ function (
             var thisB = this;
             var layout = this.inherited(arguments);
             return declare.safeMixin(layout, {
-                addRect: function (id, left, right, height, data) {
-                    var ret = data.get('genotypes');
-                    delete ret.toString;
-                    this.pTotalHeight = Object.keys(ret).length / 4 * (thisB.config.style.height + (thisB.config.style.offset || 0));
-                    return this.pTotalHeight;
+                getTotalHeight: function() {
+                    return thisB.totalHeight;
                 }
             });
         },
@@ -138,6 +135,14 @@ function (
             }
 
             return opts;
+        },
+        fillBlock: function(args) {
+            var thisB = this;
+            this.store.getVCFHeader().then(function (header) {
+                thisB.totalHeight = Object.keys(header.samples).length / 4 * (thisB.config.style.height + (thisB.config.style.offset || 0));
+                thisB.heightUpdate(thisB.totalHeight, args.blockIndex);
+            });
+            this.inherited(arguments);
         },
         setViewInfo: function() {
             this.inherited( arguments );
