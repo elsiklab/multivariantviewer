@@ -1,3 +1,9 @@
+# Version 0.8.0
+
+- Fix issue with the track height not getting calculated properly in regions with no variants. #12
+- Allow `includeIndels` option to render indels in the chart, which is disabled by default to avoid overlaps. #11
+
+
 # Version 0.7.0
 
 - Fixed tooltips not disappearing
