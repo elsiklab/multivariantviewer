@@ -65,7 +65,7 @@ In trackList.json format
         "urlTemplate": "variants.vcf.gz",
         "label": "Variant track",
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
-        "showLabels" true
+        "showLabels": true
     }
 
 ## Sample
