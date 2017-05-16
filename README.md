@@ -7,9 +7,9 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ### Tracktype
  
-* MultiVariantViewer/View/Track/Grid - displays all genotypes for features
-* MultiVariantViewer/View/Track/LDTrack - displays ld triangle on the genome browser
-* MultiVariantViewer/View/Track/Matrix - displays all genotypes for features in matrix form
+* `MultiVariantViewer/View/Track/Grid` - displays all genotypes for features
+* `MultiVariantViewer/View/Track/LDTrack` - displays ld triangle on the genome browser
+* `MultiVariantViewer/View/Track/Matrix` - displays all genotypes for features in matrix form
 
 ### Style options
 
@@ -41,22 +41,58 @@ The sublabels are optional, and the sample names from the VCF are shown if not s
 
 ### LD viewing options
 
-* ldviewer - URL for the linkage_server service. Default http://localhost:4730/
-* maf - Set minor allele frequency cutoff. Default 0.01
+* `ldviewer` - URL for the linkage_server service. Default http://localhost:4730/
+* `maf` - Set minor allele frequency cutoff. Default 0.01
 
 ## Example configuration
 
-In tracks.conf format
+### Simple config for Grid track type
 
     [tracks.variant]
     urlTemplate=file.vcf.gz
     storeClass=JBrowse/Store/SeqFeature/VCFTabix
     type=MultiVariantViewer/View/Track/Grid
     showLabels=true
+    
+### Simple config for the Matrix track type
+
+    [tracks.matrix]
+    urlTemplate=file.vcf.gz
+    storeClass=JBrowse/Store/SeqFeature/VCFTabix
+    type=MultiVariantViewer/View/Track/Matrix
+
+### Simple config for the LDTrack type
+
+Assumes that the ldserver is running on port 4730 on localhost. Of course change localhost if serving to the public, and you may also want to reverse proxy the port onto port 80 to avoid any weird firewall blocking that would be the consequence of serving on a different port
+
+    [tracks.matrix]
+    urlTemplate=file.vcf.gz
+    storeClass=JBrowse/Store/SeqFeature/VCFTabix
+    type=MultiVariantViewer/View/Track/LDTrack
+    ldserver=http://localhost:4730/
+    
+### More sophisticated config for Grid track type
+
+You can also add colors and population info for the subtrackl labels
+    
+    [tracks.variant_with_colors]
+    urlTemplate=file.vcf.gz
+    storeClass=JBrowse/Store/SeqFeature/VCFTabix
+    type=MultiVariantViewer/View/Track/Grid
+    showLabels=true
     labelFont=4px sans-serif
     style.height=10
-    sublabels+=json:{"name": "sample1", "color": "blue", "description": "mouseover description"}
-    sublabels+=json:{"name": "sample2", "color": "red", "description": "mouseover description"}
+    sublabels+=json:{"name": "sample1", "color": "blue", "description": "mouseover description", "population": "CEU"}
+    sublabels+=json:{"name": "sample2", "color": "red", "description": "mouseover description", "population": "CEU"}
+
+Note that sublabel config is not necessarily, it is only used to add colors and population info
+
+Also note that adding style.height=10 sets how tall each subtrack is. 
+
+### Example config in JSON format
+
+The above configs are tracks.conf based, but you can do the same thing in trackList.json too
+
 
 In trackList.json format
 
@@ -68,13 +104,13 @@ In trackList.json format
         "showLabels": true
     }
 
-## Sample
+## Sample browser
 
 See test subdirectory for example, you can use http://localhost/jbrowse/?data=plugins/MultiVariantViewer/test/data to see the sample data
 
 
 
-## Screenshot
+## Screenshots
 
 ![](img/example.png)
 
@@ -120,4 +156,6 @@ Optionally, LD can be calculated from the VCF files on the server side using pli
     node linkage_server/index.js
 
 You might also find it useful to use a node.js taskrunner like forever or pm2
+
+
 
