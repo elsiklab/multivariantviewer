@@ -13,7 +13,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 ### Style options
 
-* `style->height` - Pixel height for each sample. Default: 12
+* `style->height` - Pixel height for each sample. Default: 12 for grid, 1 for matrix
 * `style->offset` - Pixel offset between each sample. Default: 0
 * `style->ref_color` - Color for reference allele. Default grey
 * `style->het_color` - Color for heterozygous allele. Default cyan

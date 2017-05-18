@@ -46,7 +46,7 @@ function (
             if (this.snps[0]) {
                 var g = this.snps[0].get('genotypes');
                 delete g.toString;
-                return Object.keys(g).length * this.config.style.elt + 80;
+                return Object.keys(g).length * (this.config.style.elt||this.config.style.height) + 80;
             }
             return 0;
         },
@@ -54,7 +54,7 @@ function (
         _defaultConfig: function () {
             return Util.deepUpdate(lang.mixin(this.inherited(arguments), {
                 style: {
-                    elt: 1,
+                    height: 1,
                     ref_color: '#aaa',
                     hom_color: 'blue',
                     het_color: 'cyan'
