@@ -35,7 +35,8 @@ The matrixColor callback can change those colors if ref_color/het_color/hom_colo
 ### Grid and matrix options
 
 * `sublabels` - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover", "population": "CEU"}
-* `sortByPopulation` - Sorts genotypes by population. Also available from track menu
+* `sortByPopulation` - Sorts samples by population specified in sublabels. Also available from track menu
+* `sortBySublabels` - Sorts samples by the order of the sublabels in the config
 
 The sublabels are optional, and the sample names from the VCF are shown if not specified, but coloring the labels and things can be added via sublabels
 

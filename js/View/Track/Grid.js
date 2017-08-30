@@ -69,8 +69,12 @@ function (
                 this.store.getVCFHeader().then(function (header) {
                     var keys = dojo.clone(header.samples);
                     if (c.sortByPopulation) {
-                        keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
+                        keys.sort(function (a, b) { var r = thisB.labels; return r[a.trim()].population.localeCompare(r[b.trim()].population); });
                     }
+                    else if(c.sortBySublabels) {
+                        keys = thisB.config.sublabels.map(function(r) { return r.name });
+                    }
+                    thisB.keyorder = dojo.clone(keys)
                     thisB.sublabels = array.map(keys, function (sample, i) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
@@ -130,6 +134,7 @@ function (
                         thisB.config.sortByPopulation = !thisB.config.sortByPopulation;
                         thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
                         thisB.redraw();
+                        thisB.makeTrackLabel();
                     }
                 });
             }

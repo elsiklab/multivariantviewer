@@ -1,3 +1,7 @@
+# Version 0.9.0
+
+- Fix issue where genotypes were not paired to the sublabels properly. Thanks to @chcir for reporting.
+
 # Version 0.8.0
 
 - Fix issue with the track height not getting calculated properly in regions with no variants. #12

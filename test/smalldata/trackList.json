@@ -1,0 +1,161 @@
+{
+   "tracks" : [
+          {
+           "storeClass" : "JBrowse/Store/SeqFeature/VCFTabix",
+           "urlTemplate" : "test.vcf.gz",
+           "category" : "SNPs",
+           "type" : "JBrowse/View/Track/CanvasVariants",
+           "key" : "SNPs from syzygium longifolium HaplotypeCaller-filtered"
+          }, 
+          {
+             "storeClass" : "JBrowse/Store/SeqFeature/VCFTabix",
+             "urlTemplate" : "test.vcf.gz",
+             "type" : "MultiVariantViewer/View/Track/Grid",
+             "category" : "SNPs MVV",
+             "showTooltips" : true,
+             "clickTooltips" : true,
+             "sortBySublabels" : true,
+             "label" : "SNPs from syzygium longifolium HaplotypeCaller-filtered-MVV orig",
+             "showLabels" : true,
+             "sublabels" : [
+                {
+                   "population" : "susceptible",
+                   "color" : "red",
+                   "name" : "8"
+                },
+                {
+                   "population" : "susceptible",
+                   "color" : "red",
+                   "name" : "9"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "7"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "10"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "11"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "12"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "13"
+                }
+             ]
+          },
+          {
+             "storeClass" : "JBrowse/Store/SeqFeature/VCFTabix",
+             "urlTemplate" : "test.vcf.gz",
+             "type" : "MultiVariantViewer/View/Track/Grid",
+             "category" : "SNPs MVV",
+             "showTooltips" : true,
+             "clickTooltips" : true,
+             "sortByPopulation" : true,
+             "label" : "SNPs from syzygium longifolium HaplotypeCaller-filtered-MVV",
+             "showLabels" : true,
+             "sublabels" : [
+                {
+                   "population" : "susceptible",
+                   "color" : "red",
+                   "name" : "8"
+                },
+                {
+                   "population" : "susceptible",
+                   "color" : "red",
+                   "name" : "9"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "7"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "10"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "11"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "12"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "13"
+            }
+             ]
+          },
+          {
+             "storeClass" : "JBrowse/Store/SeqFeature/VCFTabix",
+             "urlTemplate" : "out.vcf.gz",
+             "type" : "MultiVariantViewer/View/Track/Grid",
+             "category" : "SNPs MVV",
+             "showTooltips" : true,
+             "clickTooltips" : true,
+             "sortByPopulation" : true,
+             "label" : "SNPs from syzygium longifolium HaplotypeCaller-filtered-MVV alphanum",
+             "showLabels" : true,
+             "sublabels" : [
+                {
+                   "population" : "susceptible",
+                   "color" : "red",
+                   "name" : "A8"
+                },
+                {
+                   "population" : "susceptible",
+                   "color" : "red",
+                   "name" : "A9"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "A7"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "A10"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "A11"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "A12"
+                },
+                {
+                   "population" : "resistant",
+                   "color" : "green",
+                   "name" : "A13"
+            }
+         ]
+      }
+  
+     ],
+
+    
+    "plugins":["MultiVariantViewer"],
+    "formatVersion" : 1
+}
+

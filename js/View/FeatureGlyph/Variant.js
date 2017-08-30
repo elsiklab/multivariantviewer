@@ -23,15 +23,18 @@ function (
             var style = lang.hitch(this, 'getStyle');
             var height = this._getFeatureHeight(fRect.viewInfo, fRect.f);
             var keys = Object.keys(genotypes);
+            var g = {};
+            keys.forEach(function(k) {
+                g[k.trim()] = genotypes[k];
+            })
             var thisB = this;
-            if (this.config.sortByPopulation) {
-                keys.sort(function (a, b) { return thisB.track.labels[a.trim()].population.localeCompare(thisB.track.labels[b.trim()].population); });
-            }
+            keys = thisB.track.keyorder;
 
             keys.forEach(function (key, ret) {
                 var col;
-                if (genotypes[key].GT) {
-                    var valueParse = genotypes[key].GT.values[0];
+                var k = key.trim();
+                if (g[k].GT) {
+                    var valueParse = g[k].GT.values[0];
                     var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                     var split = valueParse.split(splitter);
                     if(!splitter) {
