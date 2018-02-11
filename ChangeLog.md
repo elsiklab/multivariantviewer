@@ -1,3 +1,8 @@
+# Version 1.0.0
+
+- Add sublabelsCsv config to put sublabels in CSV file
+- Support no-call properly. Thanks to @carrere and @srobb1 for pointing this out
+
 # Version 0.9.0
 
 - Fix issue where genotypes were not paired to the sublabels properly. Thanks to @chcir for reporting.
@@ -40,7 +45,7 @@
 
 - Plot LD and matrix in dialog boxes
 - Experimental LD as a track
-- Add option to open grid track to File->Open if user wants to view with their own VCF file 
+- Add option to open grid track to File->Open if user wants to view with their own VCF file
 - Renamed track types, take note if upgrading
 
 # Version 0.1.0

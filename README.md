@@ -6,7 +6,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 
 
 ### Tracktype
- 
+
 * `MultiVariantViewer/View/Track/Grid` - displays all genotypes for features
 * `MultiVariantViewer/View/Track/LDTrack` - displays ld triangle on the genome browser
 * `MultiVariantViewer/View/Track/Matrix` - displays all genotypes for features in matrix form
@@ -18,10 +18,11 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 * `style->ref_color` - Color for reference allele. Default grey
 * `style->het_color` - Color for heterozygous allele. Default cyan
 * `style->hom_color` - Color for homozygous allele. Default blue
+* `style->no_call` - Color for no call allele. Default white
 * `style->matrixColor` - If you make ref_color, het_color, and hom_color null, then this function is called to determine the color. See below for function prototype
 
 
-The matrixColor callback can change those colors if ref_color/het_color/hom_color are set to null. The matrixColor function signature is `function(feature, type, genotype)` where `type` is either 'ref' or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
+The matrixColor callback can change those colors if ref_color/het_color/hom_color are set to null. The matrixColor function signature is `function(feature, type, genotype)` where `type` is either 'ref', 'nocall', or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
 
 ### Grid specific options
 
@@ -35,6 +36,7 @@ The matrixColor callback can change those colors if ref_color/het_color/hom_colo
 ### Grid and matrix options
 
 * `sublabels` - An array of structures like {"name": "sample1", "color": "red", "description": "Optional description or sample displayed on mouseover", "population": "CEU"}
+* `sublabelsCsv` - A CSV file containing columns name,color,population (put a header for the column names in the CSV). Then set "sublabelsCsv": "sublabels.csv" for example
 * `sortByPopulation` - Sorts samples by population specified in sublabels. Also available from track menu
 * `sortBySublabels` - Sorts samples by the order of the sublabels in the config
 
@@ -54,7 +56,7 @@ The sublabels are optional, and the sample names from the VCF are shown if not s
     storeClass=JBrowse/Store/SeqFeature/VCFTabix
     type=MultiVariantViewer/View/Track/Grid
     showLabels=true
-    
+
 ### Simple config for the Matrix track type
 
     [tracks.matrix]
@@ -71,11 +73,11 @@ Assumes that the ldserver is running on port 4730 on localhost. Of course change
     storeClass=JBrowse/Store/SeqFeature/VCFTabix
     type=MultiVariantViewer/View/Track/LDTrack
     ldserver=http://localhost:4730/
-    
+
 ### More sophisticated config for Grid track type
 
 You can also add colors and population info for the subtrackl labels
-    
+
     [tracks.variant_with_colors]
     urlTemplate=file.vcf.gz
     storeClass=JBrowse/Store/SeqFeature/VCFTabix
@@ -88,7 +90,7 @@ You can also add colors and population info for the subtrackl labels
 
 Note that sublabel config is not necessarily, it is only used to add colors and population info
 
-Also note that adding style.height=10 sets how tall each subtrack is. 
+Also note that adding style.height=10 sets how tall each subtrack is.
 
 ### Example config in JSON format
 
@@ -136,7 +138,7 @@ Clone the repo to your plugins directory and name it MultiVariantViewer
 Then add it to your jbrowse config
 
     "plugins": ["MultiVariantViewer"]
-    
+
 See http://gmod.org/wiki/JBrowse_FAQ#How_do_I_install_a_plugin for more details
 
 ## linkage_server
