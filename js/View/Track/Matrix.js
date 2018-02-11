@@ -80,7 +80,8 @@ function (
                     height: 1,
                     ref_color: '#aaa',
                     hom_color: 'blue',
-                    het_color: 'cyan'
+                    het_color: 'cyan',
+                    no_call: 'white'
                 }
             }));
         },
@@ -184,19 +185,23 @@ function (
                                 var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                                 var split = valueParse.split(splitter);
                                 if (!splitter) {
-                                    if (valueParse === '0') {
+                                    if (valueParse === '.') {
+                                        col = thisB.config.style.no_call;
+                                    } else if (valueParse === '0') {
                                         col = thisB.config.style.ref_color;
                                     } else {
                                         col = thisB.config.style.hom_color;
                                     }
-                                } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                                    col = thisB.config.style.hom_color;
-                                } else if (+split[0] !== +split[1]) {
-                                    col = thisB.config.style.het_color;
-                                } else if (split[0] === '.') {
-                                    col = thisB.config.style.no_call;
-                                } else {
-                                    col = thisB.config.style.ref_color;
+                                } else if (splitter) {
+                                    if (split[0] === '.') {
+                                        col = thisB.config.style.no_call;
+                                    } else if (+split[0] === +split[1] && +split[0] !== 0) {
+                                        col = thisB.config.style.hom_color;
+                                    } else if (+split[0] !== +split[1]) {
+                                        col = thisB.config.style.het_color;
+                                    } else {
+                                        col = thisB.config.style.ref_color;
+                                    }
                                 }
                             } else {
                                 col = thisB.config.style.ref_color;
@@ -242,6 +247,7 @@ function (
             opts.push({
                 label: 'Refresh matrix',
                 onClick: function () {
+                    thisB.def = new Deferred();
                     thisB.redrawView = true;
                     thisB.getVariants();
                     thisB.redraw();

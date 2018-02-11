@@ -2,6 +2,7 @@
 
 - Add sublabelsCsv config to put sublabels in CSV file
 - Support no-call properly. Thanks to @carrere and @srobb1 for pointing this out
+- Fix refresh matrix function on matrix tracks
 
 # Version 0.9.0
 
