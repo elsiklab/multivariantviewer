@@ -24,9 +24,9 @@ function (
             var height = this._getFeatureHeight(fRect.viewInfo, fRect.f);
             var keys = Object.keys(genotypes);
             var g = {};
-            keys.forEach(function(k) {
+            keys.forEach(function (k) {
                 g[k.trim()] = genotypes[k];
-            })
+            });
             var thisB = this;
             keys = thisB.track.keyorder;
 
@@ -37,16 +37,19 @@ function (
                     var valueParse = g[k].GT.values[0];
                     var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                     var split = valueParse.split(splitter);
-                    if(!splitter) {
-                        if(valueParse == '0') {
+                    if (!splitter) {
+                        if (valueParse === '.') {
+                            col = this.config.style.no_call || color(fRect.f, 'nocall', valueParse);
+                        } else if (valueParse === '0') {
                             col = this.config.style.ref_color || color(fRect.f, 'ref', valueParse);
-                        }
-                        else {
+                        } else {
                             col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
                         }
-                    }
-                    else {
-                        if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                    } else {
+                        if (split[0] === '.') {
+                            col = this.config.style.no_call || color(fRect.f, 'nocall', valueParse);
+                        }
+                        else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
                             col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
                         } else if (+split[0] !== +split[1]) {
                             col = this.config.style.het_color || color(fRect.f, 'alt', valueParse);

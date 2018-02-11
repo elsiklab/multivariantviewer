@@ -38,7 +38,11 @@ function (
                     ref_color: '#aaa',
                     het_color: 'cyan',
                     hom_color: 'blue',
+                    no_call: 'white',
                     matrixColor: function (feat, gt, gtString) {
+                        if (gt === 'nocall') {
+                            return 'white';
+                        }
                         if (gt === 'ref') {
                             return '#aaa';
                         } else if (!/^1([\|\/]1)*$/.test(gtString) && !/^0([\|\/]0)*$/.test(gtString)) {
@@ -55,7 +59,7 @@ function (
             var thisB = this;
             var layout = this.inherited(arguments);
             return declare.safeMixin(layout, {
-                getTotalHeight: function() {
+                getTotalHeight: function () {
                     return thisB.totalHeight;
                 }
             });
@@ -70,12 +74,11 @@ function (
                     var keys = dojo.clone(header.samples);
                     if (c.sortByPopulation) {
                         keys.sort(function (a, b) { var r = thisB.labels; return r[a.trim()].population.localeCompare(r[b.trim()].population); });
+                    } else if (c.sortBySublabels) {
+                        keys = thisB.config.sublabels.map(function (r) { return r.name; });
                     }
-                    else if(c.sortBySublabels) {
-                        keys = thisB.config.sublabels.map(function(r) { return r.name });
-                    }
-                    thisB.keyorder = dojo.clone(keys)
-                    thisB.sublabels = array.map(keys, function (sample, i) {
+                    thisB.keyorder = dojo.clone(keys);
+                    thisB.sublabels = array.map(keys, function (sample) {
                         var key = sample.trim();
                         var elt = thisB.labels[key] || {};
                         var width = c.labelWidth ? c.labelWidth + 'px' : null;
@@ -129,7 +132,7 @@ function (
                 opts.push({
                     label: 'Sort by population',
                     type: 'dijit/CheckedMenuItem',
-                    checked: !! thisB.config.sortByPopulation,
+                    checked: !!thisB.config.sortByPopulation,
                     onClick: function () {
                         thisB.config.sortByPopulation = !thisB.config.sortByPopulation;
                         thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
@@ -141,7 +144,7 @@ function (
 
             return opts;
         },
-        fillBlock: function(args) {
+        fillBlock: function (args) {
             var thisB = this;
             this.store.getVCFHeader().then(function (header) {
                 thisB.totalHeight = header.samples.length * (thisB.config.style.height + (thisB.config.style.offset || 0));
@@ -149,13 +152,13 @@ function (
             });
             this.inherited(arguments);
         },
-        setViewInfo: function() {
-            this.inherited( arguments );
+        setViewInfo: function () {
+            this.inherited(arguments);
             delete this.staticCanvas;
         },
-        _connectEventHandlers: function() {
+        _connectEventHandlers: function () {
         },
-        _attachMouseOverEvents: function() {
+        _attachMouseOverEvents: function () {
         }
     });
 });

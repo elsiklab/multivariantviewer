@@ -46,7 +46,7 @@ function (
             if (this.snps[0]) {
                 var g = this.snps[0].get('genotypes');
                 delete g.toString;
-                return Object.keys(g).length * (this.config.style.elt||this.config.style.height) + 80;
+                return Object.keys(g).length * (this.config.style.elt || this.config.style.height) + 80;
             }
             return 0;
         },
@@ -161,22 +161,20 @@ function (
                             var valueParse = genotypes[key].GT.values[0];
                             var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                             var split = valueParse.split(splitter);
-                            if(!splitter) {
-                                if(valueParse == '0') {
+                            if (!splitter) {
+                                if (valueParse === '0') {
                                     col = this.config.style.ref_color;
-                                }
-                                else {
-                                    col = this.config.style.hom_color;
-                                }
-                            }
-                            else {
-                                if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                                    col = this.config.style.hom_color;
-                                } else if (+split[0] !== +split[1]) {
-                                    col = this.config.style.het_color;
                                 } else {
-                                    col = this.config.style.ref_color;
+                                    col = this.config.style.hom_color;
                                 }
+                            } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                                col = this.config.style.hom_color;
+                            } else if (+split[0] !== +split[1]) {
+                                col = this.config.style.het_color;
+                            } else if (split[0] === '.') {
+                                col = this.config.style.no_call;
+                            } else {
+                                col = this.config.style.ref_color;
                             }
                         } else {
                             col = this.config.style.ref_color;
@@ -229,7 +227,7 @@ function (
             if (this.config.sublabels && this.config.sublabels[0].population) {
                 opts.push({
                     label: 'Sort by population',
-                    checked: !! thisB.config.sortByPopulation,
+                    checked: !!thisB.config.sortByPopulation,
                     onClick: function () {
                         thisB.config.sortByPopulation = !thisB.config.sortByPopulation;
                         thisB.browser.publish('/jbrowse/v1/v/tracks/replace', [thisB.config]);
