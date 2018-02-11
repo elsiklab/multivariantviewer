@@ -95,7 +95,6 @@ function (
 
             if (c.showLabels || c.showTooltips) {
                 this.labelsCompleted.then(function () {
-                    console.log('here');
                     thisB.store.getVCFHeader().then(function (header) {
                         var keys = dojo.clone(header.samples);
                         if (c.sortByPopulation) {
