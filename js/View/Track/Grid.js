@@ -6,7 +6,9 @@ define([
     'JBrowse/View/Track/CanvasFeatures',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
-    'dijit/Tooltip'
+    'dojo/Deferred',
+    'dijit/Tooltip',
+    'dojox/data/CsvStore'
 ],
 function (
     declare,
@@ -16,15 +18,37 @@ function (
     CanvasFeatures,
     BlockBased,
     Util,
-    Tooltip
+    Deferred,
+    Tooltip,
+    CsvStore
 ) {
     return declare(CanvasFeatures, {
         constructor: function () {
             this.labels = {};
+            this.labelsCompleted = new Deferred();
+            var thisB = this;
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function (elt) {
                     this.labels[elt.name] = elt;
                 }, this);
+                this.labelsCompleted.resolve('success');
+            } else if (this.config.sublabelsCsv) {
+                var store = new CsvStore({url: Util.resolveUrl(thisB.config.baseUrl, this.config.sublabelsCsv) });
+                store.fetch({
+                    onComplete: function (items) {
+                        for (var i = 0; i < items.length; i++) {
+                            var name = store.getValue(items[i], 'name');
+                            var population = store.getValue(items[i], 'population');
+                            var color = store.getValue(items[i], 'population');
+                            thisB.labels[name] = {name: name, color: color, population: population};
+                        }
+                        thisB.labelsCompleted.resolve('success');
+                    }, onError: function () {
+                        thisB.labelsCompleted.reject('error');
+                    }
+                });
+            } else {
+                this.labelsCompleted.resolve('success');
             }
         },
 
@@ -70,40 +94,43 @@ function (
             var c = this.config;
 
             if (c.showLabels || c.showTooltips) {
-                this.store.getVCFHeader().then(function (header) {
-                    var keys = dojo.clone(header.samples);
-                    if (c.sortByPopulation) {
-                        keys.sort(function (a, b) { var r = thisB.labels; return r[a.trim()].population.localeCompare(r[b.trim()].population); });
-                    } else if (c.sortBySublabels) {
-                        keys = thisB.config.sublabels.map(function (r) { return r.name; });
-                    }
-                    thisB.keyorder = dojo.clone(keys);
-                    thisB.sublabels = array.map(keys, function (sample) {
-                        var key = sample.trim();
-                        var elt = thisB.labels[key] || {};
-                        var width = c.labelWidth ? c.labelWidth + 'px' : null;
-                        var htmlnode = dojo.create('div', {
-                            className: 'varianttrack-sublabel',
-                            id: thisB.config.label + '_' + key,
-                            style: {
-                                position: 'absolute',
-                                height: c.style.height - 1 + 'px',
-                                width: c.showLabels ? width : '10px',
-                                font: c.labelFont,
-                                backgroundColor: elt.color
-                            },
-                            innerHTML: c.showLabels ? key : ''
-                        }, thisB.div);
+                this.labelsCompleted.then(function () {
+                    console.log('here');
+                    thisB.store.getVCFHeader().then(function (header) {
+                        var keys = dojo.clone(header.samples);
+                        if (c.sortByPopulation) {
+                            keys.sort(function (a, b) { var r = thisB.labels; return r[a.trim()].population.localeCompare(r[b.trim()].population); });
+                        } else if (c.sortBySublabels) {
+                            keys = thisB.config.sublabels.map(function (r) { return r.name; });
+                        }
+                        thisB.keyorder = dojo.clone(keys);
+                        thisB.sublabels = array.map(keys, function (sample) {
+                            var key = sample.trim();
+                            var elt = thisB.labels[key] || {};
+                            var width = c.labelWidth ? c.labelWidth + 'px' : null;
+                            var htmlnode = dojo.create('div', {
+                                className: 'varianttrack-sublabel',
+                                id: thisB.config.label + '_' + key,
+                                style: {
+                                    position: 'absolute',
+                                    height: c.style.height - 1 + 'px',
+                                    width: c.showLabels ? width : '10px',
+                                    font: c.labelFont,
+                                    backgroundColor: elt.color
+                                },
+                                innerHTML: c.showLabels ? key : ''
+                            }, thisB.div);
 
-                        on(htmlnode, c.clickTooltips ? 'click' : 'mouseover', function () {
-                            Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''), htmlnode);
+                            on(htmlnode, c.clickTooltips ? 'click' : 'mouseover', function () {
+                                Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''), htmlnode);
+                            });
+                            on(htmlnode, 'mouseleave', function () {
+                                Tooltip.hide(htmlnode);
+                            });
+
+
+                            return htmlnode;
                         });
-                        on(htmlnode, 'mouseleave', function () {
-                            Tooltip.hide(htmlnode);
-                        });
-
-
-                        return htmlnode;
                     });
                 });
             }

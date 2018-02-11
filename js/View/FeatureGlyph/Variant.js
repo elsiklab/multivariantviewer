@@ -45,17 +45,14 @@ function (
                         } else {
                             col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
                         }
+                    } else if (split[0] === '.') {
+                        col = this.config.style.no_call || color(fRect.f, 'nocall', valueParse);
+                    } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                        col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
+                    } else if (+split[0] !== +split[1]) {
+                        col = this.config.style.het_color || color(fRect.f, 'alt', valueParse);
                     } else {
-                        if (split[0] === '.') {
-                            col = this.config.style.no_call || color(fRect.f, 'nocall', valueParse);
-                        }
-                        else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                            col = this.config.style.hom_color || color(fRect.f, 'alt', valueParse);
-                        } else if (+split[0] !== +split[1]) {
-                            col = this.config.style.het_color || color(fRect.f, 'alt', valueParse);
-                        } else {
-                            col = this.config.style.ref_color || color(fRect.f, 'ref', valueParse);
-                        }
+                        col = this.config.style.ref_color || color(fRect.f, 'ref', valueParse);
                     }
                 } else {
                     col = this.config.style.ref_color || color(fRect.f, 'ref');

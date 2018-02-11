@@ -7,7 +7,8 @@ define([
     'dojo/io-query',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
-    'dojo/Deferred'
+    'dojo/Deferred',
+    'dojox/data/CsvStore'
 ],
 function (
     declare,
@@ -18,19 +19,41 @@ function (
     ioQuery,
     BlockBased,
     Util,
-    Deferred
+    Deferred,
+    CsvStore
 ) {
     return declare(BlockBased, {
         constructor: function (args) {
             this.labels = {};
             this.redrawView = true;
             this.browser = args.browser;
-
+            this.def = new Deferred();
+            this.labelsCompleted = new Deferred();
+            var thisB = this;
             if (this.config.sublabels) {
                 this.config.sublabels.forEach(function (elt) {
                     this.labels[elt.name] = elt;
                 }, this);
+                this.labelsCompleted.resolve('success');
+            } else if (this.config.sublabelsCsv) {
+                var store = new CsvStore({url: Util.resolveUrl(thisB.config.baseUrl, this.config.sublabelsCsv) });
+                store.fetch({
+                    onComplete: function (items) {
+                        for (var i = 0; i < items.length; i++) {
+                            var name = store.getValue(items[i], 'name');
+                            var population = store.getValue(items[i], 'population');
+                            var color = store.getValue(items[i], 'color');
+                            thisB.labels[name] = {name: name, color: color, population: population};
+                        }
+                        thisB.labelsCompleted.resolve('success');
+                    }, onError: function () {
+                        thisB.labelsCompleted.reject('error');
+                    }
+                });
+            } else {
+                this.labelsCompleted.resolve('success');
             }
+
             this.getVariants();
         },
 
@@ -112,105 +135,105 @@ function (
         getVariants: function () {
             var thisB = this;
             this.snps = [];
-            this.def = new Deferred();
             var region = this.browser.view.visibleRegion();
-            this.store.getFeatures(region, function (feat) {
-                thisB.snps.push(feat);
-            }, function () {
-                thisB.def.resolve();
-            }, function (error) {
-                console.error(error);
-                thisB.fatalError = error;
-                thisB.def.reject(error);
+            this.labelsCompleted.then(function () {
+                thisB.store.getFeatures(region, function (feat) {
+                    thisB.snps.push(feat);
+                }, function () {
+                    thisB.def.resolve();
+                }, function (error) {
+                    console.error(error);
+                    thisB.fatalError = error;
+                    thisB.def.reject(error);
+                });
             });
         },
 
         renderBox: function (allData, w /* , h */) {
-            var c = this.staticCanvas;
-            var ctx = c.getContext('2d');
-            var region = this.browser.view.visibleRegion();
-            var snps = this.snps;
-            var boxw = (w - 200) / snps.length;
-            var elt = this.config.style.elt;
-            var bw = boxw / Math.sqrt(2);
-            var trans = (w / 2) - (snps.length * boxw / 2);
             var thisB = this;
+            this.labelsCompleted.then(function () {
+                var c = thisB.staticCanvas;
+                var ctx = c.getContext('2d');
+                var region = thisB.browser.view.visibleRegion();
+                var snps = thisB.snps;
+                var boxw = (w - 200) / snps.length;
+                var elt = thisB.config.style.elt || thisB.config.style.height;
+                var bw = boxw / Math.sqrt(2);
+                var trans = (w / 2) - (snps.length * boxw / 2);
+                if (allData) {
+                    ctx.save();
+                    ctx.translate(trans, 80);
+                    if (!snps[0]) {
+                        return;
+                    }
+                    var g = snps[0].get('genotypes');
+                    delete g.toString;
+                    var keys = Object.keys(g);
+                    if (thisB.config.sortByPopulation) {
+                        keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
+                    }
 
-
-            // render snp matrix
-            if (allData) {
-                ctx.save();
-                ctx.translate(trans, 80);
-                if (!snps[0]) {
-                    return;
-                }
-                var g = snps[0].get('genotypes');
-                delete g.toString;
-                var keys = Object.keys(g);
-                if (this.config.sortByPopulation) {
-                    keys.sort(function (a, b) { return thisB.labels[a.trim()].population.localeCompare(thisB.labels[b.trim()].population); });
-                }
-
-                for (var j = 0; j < snps.length; j++) {
-                    var snp = snps[j];
-                    var genotypes = snp.get('genotypes');
-                    for (var i = 0; i < keys.length; i++) {
-                        var key = keys[i];
-                        var col;
-                        if (genotypes[key].GT) {
-                            var valueParse = genotypes[key].GT.values[0];
-                            var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
-                            var split = valueParse.split(splitter);
-                            if (!splitter) {
-                                if (valueParse === '0') {
-                                    col = this.config.style.ref_color;
+                    for (var j = 0; j < snps.length; j++) {
+                        var snp = snps[j];
+                        var genotypes = snp.get('genotypes');
+                        for (var i = 0; i < keys.length; i++) {
+                            var key = keys[i];
+                            var col;
+                            if (genotypes[key].GT) {
+                                var valueParse = genotypes[key].GT.values[0];
+                                var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
+                                var split = valueParse.split(splitter);
+                                if (!splitter) {
+                                    if (valueParse === '0') {
+                                        col = thisB.config.style.ref_color;
+                                    } else {
+                                        col = thisB.config.style.hom_color;
+                                    }
+                                } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
+                                    col = thisB.config.style.hom_color;
+                                } else if (+split[0] !== +split[1]) {
+                                    col = thisB.config.style.het_color;
+                                } else if (split[0] === '.') {
+                                    col = thisB.config.style.no_call;
                                 } else {
-                                    col = this.config.style.hom_color;
+                                    col = thisB.config.style.ref_color;
                                 }
-                            } else if (+split[0] === +split[1] && split[0] !== '.' && +split[0] !== 0) {
-                                col = this.config.style.hom_color;
-                            } else if (+split[0] !== +split[1]) {
-                                col = this.config.style.het_color;
-                            } else if (split[0] === '.') {
-                                col = this.config.style.no_call;
                             } else {
-                                col = this.config.style.ref_color;
+                                col = thisB.config.style.ref_color;
                             }
-                        } else {
-                            col = this.config.style.ref_color;
+                            ctx.fillStyle = col;
+                            ctx.fillRect(j * boxw, i * elt, boxw + 0.6, elt + 0.6);
+                            ctx.fill();
                         }
-                        ctx.fillStyle = col;
-                        ctx.fillRect(j * boxw, i * elt, boxw + 0.6, elt + 0.6);
-                        ctx.fill();
                     }
-                }
-                ctx.restore();
+                    ctx.restore();
 
+                    ctx.save();
+                    ctx.translate(10, 80);
+                    if (thisB.labels) {
+                        for (var i = 0; i < keys.length; i++) {
+                            var f = keys[i].trim();
+                            ctx.fillStyle = thisB.labels[f].color;
+                            ctx.fillRect(0, i * elt, 10, elt + 0.6);
+                        }
+                    }
+                    ctx.restore();
+                }
+
+                // draw lines connecting variants to feats
                 ctx.save();
-                ctx.translate(10, 80);
-                if (this.config.sublabels) {
-                    for (var i = 0; i < keys.length; i++) {
-                        var f = keys[i].trim();
-                        ctx.fillStyle = this.labels[f].color;
-                        ctx.fillRect(0, i * elt, 10, elt + 0.6);
-                    }
+                ctx.translate(trans, 40);
+                ctx.stokeStyle = 'black';
+                for (var k = 0; k < snps.length; k++) {
+                    var snp = snps[k];
+                    var pos = (snp.get('start') - region.start) * w / (region.end - region.start) - trans;
+                    ctx.beginPath();
+                    ctx.moveTo(k * boxw + bw - 3, 30);
+                    ctx.lineTo(pos - 3, 0);
+                    ctx.stroke();
                 }
                 ctx.restore();
-            }
-
-            // draw lines connecting variants to feats
-            ctx.save();
-            ctx.translate(trans, 40);
-            ctx.stokeStyle = 'black';
-            for (var k = 0; k < snps.length; k++) {
-                var snp = snps[k];
-                var pos = (snp.get('start') - region.start) * w / (region.end - region.start) - trans;
-                ctx.beginPath();
-                ctx.moveTo(k * boxw + bw - 3, 30);
-                ctx.lineTo(pos - 3, 0);
-                ctx.stroke();
-            }
-            ctx.restore();
+            });
         },
 
         _trackMenuOptions: function () {
