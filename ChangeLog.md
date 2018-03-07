@@ -1,3 +1,7 @@
+# Version 1.0.1
+
+- Fix bug in the matrix glyph
+
 # Version 1.0.0
 
 - Add sublabelsCsv config to put sublabels in CSV file
