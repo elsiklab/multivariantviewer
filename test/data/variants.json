@@ -52,7 +52,7 @@
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "MultiVariantViewer/View/Track/Grid",
       "style": {
-        "height": 12
+        "height": 9
       }
     },
     {
@@ -64,7 +64,7 @@
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "MultiVariantViewer/View/Track/Grid",
       "style": {
-        "height": 12
+        "height": 9
       },
       "sublabels": [
           {
@@ -5986,7 +5986,7 @@
       "urlTemplate": "volvox.test.vcf.gz",
       "type": "MultiVariantViewer/View/Track/Grid",
       "style": {
-        "height": 12
+        "height": 9
       },
       "sublabels": [
           {

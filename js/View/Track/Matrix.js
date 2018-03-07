@@ -95,11 +95,11 @@ function (
             var thisB = this;
             this.inherited(arguments);
             this.def.then(function () {
-                var ratio = Util.getResolution(context, thisB.browser.config.highResolutionMode);
                 if (coords.hasOwnProperty('x') && thisB.redrawView) {
                     thisB.redrawView = false;
                     var c = thisB.staticCanvas;
                     var context = c.getContext('2d');
+                    var ratio = Util.getResolution(context, thisB.browser.config.highResolutionMode);
 
                     c.width = thisB.browser.view.elem.clientWidth;
                     c.height = thisB._canvasHeight();
