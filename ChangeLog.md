@@ -1,3 +1,8 @@
+# Version 1.0.2
+
+- Simplify tracklabel borders with border-collapse
+- Set showLabels false
+
 # Version 1.0.1
 
 - Fix bug in the matrix glyph

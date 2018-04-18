@@ -64,6 +64,15 @@ function (
             }, this);
 
             return 0;
+        },
+
+        mouseoverFeature: function( context, fRect ) {
+            this.renderFeature( context, fRect );
+            var genotypes = fRect.f.get('genotypes');
+            delete genotypes.toString;
+            var keys = Object.keys(genotypes);
+            context.fillStyle = this.getStyle( fRect.f, 'mouseovercolor' );
+            context.fillRect( fRect.rect.l, fRect.t, fRect.rect.w, fRect.rect.h*keys.length );
         }
     });
 });

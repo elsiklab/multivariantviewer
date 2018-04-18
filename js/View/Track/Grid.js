@@ -59,6 +59,7 @@ function (
                 showTooltips: true,
                 style: {
                     height: 12,
+                    showLabels: false,
                     ref_color: '#aaa',
                     het_color: 'cyan',
                     hom_color: 'blue',
@@ -138,16 +139,13 @@ function (
         },
 
         updateStaticElements: function (coords) {
-            BlockBased.prototype.updateStaticElements.apply(this, arguments);
+            this.inherited(arguments);
             if (this.sublabels && 'x' in coords) {
                 var height = this.config.style.height + (this.config.style.offset || 0);
                 var len = this.sublabels.length;
                 array.forEach(this.sublabels, function (sublabel, i) {
                     sublabel.style.left = coords.x + 'px';
                     sublabel.style.top = i * height + 'px';
-                    if (i === len - 1) {
-                        dojo.addClass(sublabel, 'last');
-                    }
                 });
             }
         },
@@ -178,13 +176,103 @@ function (
             });
             this.inherited(arguments);
         },
-        setViewInfo: function () {
-            this.inherited(arguments);
-            delete this.staticCanvas;
-        },
-        _connectEventHandlers: function () {
-        },
-        _attachMouseOverEvents: function () {
-        }
-    });
+
+		// given viewargs and a feature object, highlight that feature in
+		// all blocks.  if feature is undefined or null, unhighlight any currently
+		// highlighted feature
+		mouseoverFeature: function( feature, evt ) {
+			if( this.lastMouseover == feature )
+				return;
+
+			if( evt )
+				var bpX = this.browser.view.absXtoBp( evt.clientX );
+
+			if( this.labelTooltip)
+				this.labelTooltip.style.display = 'none';
+
+			array.forEach( this.blocks, function( block, i ) {
+				if( ! block )
+					return;
+				var context = this.getRenderingContext({ block: block, leftBase: block.startBase, scale: block.scale });
+				if( ! context )
+					return;
+
+				if( this.lastMouseover && block.fRectIndex ) {
+					var r = block.fRectIndex.getByID( this.lastMouseover.id() );
+					if( r )
+						this.renderFeature( context, r );
+				}
+
+				if( block.tooltipTimeout )
+					window.clearTimeout( block.tooltipTimeout );
+
+				if( feature ) {
+					var fRect = block.fRectIndex && block.fRectIndex.getByID( feature.id() );
+					if( ! fRect )
+						return;
+
+					if( block.containsBp( bpX ) ) {
+						var renderTooltip = dojo.hitch( this, function() {
+							if( !this.labelTooltip )
+								return;
+							var label = fRect.label || fRect.glyph.makeFeatureLabel( feature );
+							var description = fRect.description || fRect.glyph.makeFeatureDescriptionLabel( feature );
+
+							if( ( !label && !description ) )
+								return;
+
+
+							if( !this.ignoreTooltipTimeout ) {
+								this.labelTooltip.style.left = evt.clientX + "px";
+								this.labelTooltip.style.top = (evt.clientY + 15) + "px";
+							}
+							this.ignoreTooltipTimeout = true;
+							this.labelTooltip.style.display = 'block';
+							var labelSpan = this.labelTooltip.childNodes[0],
+								descriptionSpan = this.labelTooltip.childNodes[1];
+
+							if( this.config.onClick&&this.config.onClick.label ) {
+								var context = lang.mixin( { track: this, feature: feature, callbackArgs: [ this, feature ] } );
+								labelSpan.style.display = 'block';
+								labelSpan.style.font = label.font;
+								labelSpan.style.color = label.fill;
+								labelSpan.innerHTML = this.template( feature, this._evalConf( context, this.config.onClick.label, "label" ) );
+								return;
+							}
+							if( label ) {
+								labelSpan.style.display = 'block';
+								labelSpan.style.font = label.font;
+								labelSpan.style.color = label.fill;
+								labelSpan.innerHTML = label.text;
+							} else {
+								labelSpan.style.display = 'none';
+								labelSpan.innerHTML = '(no label)';
+							}
+							if( description ) {
+								descriptionSpan.style.display = 'block';
+								descriptionSpan.style.font = description.font;
+								descriptionSpan.style.color = description.fill;
+								descriptionSpan.innerHTML = description.text;
+							}
+							else {
+								descriptionSpan.style.display = 'none';
+								descriptionSpan.innerHTML = '(no description)';
+							}
+						});
+						if( this.ignoreTooltipTimeout )
+							renderTooltip();
+						else
+							block.tooltipTimeout = window.setTimeout( renderTooltip, 600);
+					}
+
+					fRect.glyph.mouseoverFeature( context, fRect );
+					this._refreshContextMenu( fRect );
+				} else {
+					block.tooltipTimeout = window.setTimeout( dojo.hitch(this, function() { this.ignoreTooltipTimeout = false; }), 200);
+				}
+			}, this );
+
+			this.lastMouseover = feature;
+		}
+	});
 });
