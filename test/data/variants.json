@@ -11939,7 +11939,11 @@
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
         "type": "MultiVariantViewer/View/Track/Grid",
         "style": {
-            "matrixColor": "function(feat, ref, gt) { if(ref=='ref') { return 'blue'; } else return 'red'; }"
+            "matrixColor": "function(feat, ref, gt) { if(ref=='ref') { return 'blue'; } else return 'red'; }",
+            "hom_color": null,
+            "het_color": null,
+            "ref_color": null,
+            "no_call": null
         }
     },
     {
@@ -11948,7 +11952,11 @@
         "storeClass": "JBrowse/Store/SeqFeature/VCFTabix",
         "type": "MultiVariantViewer/View/Track/Grid",
         "style": {
-            "matrixColor": "function(feat, ref, gt) { if(ref=='ref') { return 'blue'; } else return 'red'; }"
+            "matrixColor": "function(feat, ref, gt) { if(ref=='ref') { return 'blue'; } else return 'red'; }",
+            "hom_color": null,
+            "het_color": null,
+            "ref_color": null,
+            "no_call": null
         }
     }
   ]

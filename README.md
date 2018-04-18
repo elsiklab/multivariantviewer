@@ -19,7 +19,7 @@ A JBrowse plugin that adds some custom glyphs for variants on a "multi VCF" file
 * `style->het_color` - Color for heterozygous allele. Default cyan
 * `style->hom_color` - Color for homozygous allele. Default blue
 * `style->no_call` - Color for no call allele. Default white
-* `style->matrixColor` - If you make ref_color, het_color, and hom_color null, then this function is called to determine the color. See below for function prototype
+* `style->matrixColor` - If you make ref_color, het_color, no_call and hom_color null, then this function is called to determine the color. See below for function prototype
 
 
 The matrixColor callback can change those colors if ref_color/het_color/hom_color are set to null. The matrixColor function signature is `function(feature, type, genotype)` where `type` is either 'ref', 'nocall', or 'alt' and `genotype` is the actual genotype as 0|0 or 0|1 or similar and `feature` contains all info about a particular variant
