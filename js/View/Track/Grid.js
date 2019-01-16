@@ -86,7 +86,8 @@ function (
 
             if (c.showLabels || c.showTooltips) {
                 this.labelsCompleted.then(function () {
-                    thisB.store.getVCFHeader().then(function (header) {
+                    var ret = thisB.store.getVCFHeader||thisB.store.getParser
+                    ret.call(thisB.store).then(function (header) {
                         var keys = dojo.clone(header.samples);
                         if (c.sortByPopulation) {
                             keys.sort(function (a, b) { var r = thisB.labels; return r[a.trim()].population.localeCompare(r[b.trim()].population); });
@@ -159,7 +160,8 @@ function (
         },
         fillBlock: function (args) {
             var thisB = this;
-            this.store.getVCFHeader().then(function (header) {
+            var ret = this.store.getVCFHeader||this.store.getParser
+            ret.call(this.store).then(function (header) {
                 thisB.totalHeight = header.samples.length * (thisB.config.style.height + (thisB.config.style.offset || 0));
                 thisB.heightUpdate(thisB.totalHeight, args.blockIndex);
             });

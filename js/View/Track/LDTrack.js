@@ -35,7 +35,8 @@ function (
             this.featStarts = {};
 
             // use this promise chain to get original names of refseq in vcf
-            var d1 = this.store.getVCFHeader().then(function () {
+            var ret = this.store.getVCFHeader||this.store.getParser
+            var d1 = ret.call(this.store).then(function () {
                 var d = new Deferred();
                 thisB.store.indexedData.getLines(
                     region.ref,
