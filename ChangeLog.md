@@ -1,3 +1,7 @@
+# Version 1.0.3
+
+- Add fix for @gmod/vcf and JBrowse 1.16+
+
 # Version 1.0.2
 
 - Simplify tracklabel borders with border-collapse
