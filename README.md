@@ -42,6 +42,10 @@ The matrixColor callback can change those colors if ref_color/het_color/hom_colo
 
 The sublabels are optional, and the sample names from the VCF are shown if not specified, but coloring the labels and things can be added via sublabels
 
+## Matrix specific options
+
+* `style.elt` the height of a single element of the matrix
+
 ### LD viewing options
 
 * `ldviewer` - URL for the linkage_server service. Default http://localhost:4730/

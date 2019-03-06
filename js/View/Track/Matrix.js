@@ -136,17 +136,20 @@ function (
         getVariants: function () {
             var thisB = this;
             this.snps = [];
-            var region = this.browser.view.visibleRegion();
             this.labelsCompleted.then(function () {
-                thisB.store.getFeatures(region, function (feat) {
-                    thisB.snps.push(feat);
-                }, function () {
-                    thisB.def.resolve();
-                }, function (error) {
-                    console.error(error);
-                    thisB.fatalError = error;
-                    thisB.def.reject(error);
-                });
+                setTimeout(function() {
+                    var region = thisB.browser.view.visibleRegion();
+                    if(!region.start && !region.end) { return }
+                    thisB.store.getFeatures(region, function (feat) {
+                        thisB.snps.push(feat);
+                    }, function () {
+                        thisB.def.resolve();
+                    }, function (error) {
+                        console.error(error);
+                        thisB.fatalError = error;
+                        thisB.def.reject(error);
+                    });
+                },1000)
             });
         },
 
@@ -156,6 +159,7 @@ function (
                 var c = thisB.staticCanvas;
                 var ctx = c.getContext('2d');
                 var region = thisB.browser.view.visibleRegion();
+                if(!region.start && !region.end) return
                 var snps = thisB.snps;
                 var boxw = (w - 200) / snps.length;
                 var elt = thisB.config.style.elt || thisB.config.style.height;
@@ -218,7 +222,7 @@ function (
                     if (thisB.labels) {
                         for (var i = 0; i < keys.length; i++) {
                             var f = keys[i].trim();
-                            ctx.fillStyle = thisB.labels[f].color;
+                            ctx.fillStyle = (thisB.labels[f]||{}).color;
                             ctx.fillRect(0, i * elt, 10, elt + 0.6);
                         }
                     }
@@ -240,7 +244,54 @@ function (
                 ctx.restore();
             });
         },
+        makeTrackLabel: function () {
+            var thisB = this;
+            var c = this.config;
 
+            if (c.showLabels || c.showTooltips) {
+                this.labelsCompleted.then(function () {
+                    var ret = thisB.store.getVCFHeader||thisB.store.getParser
+                    ret.call(thisB.store).then(function (header) {
+                        var keys = dojo.clone(header.samples);
+                        if (c.sortByPopulation) {
+                            keys.sort(function (a, b) { var r = thisB.labels; return r[a.trim()].population.localeCompare(r[b.trim()].population); });
+                        } else if (c.sortBySublabels) {
+                            keys = thisB.config.sublabels.map(function (r) { return r.name; });
+                        }
+                        thisB.keyorder = dojo.clone(keys);
+                        thisB.sublabels = array.map(keys, function (sample) {
+                            var key = sample.trim();
+                            var elt = thisB.labels[key] || {};
+                            var width = c.labelWidth ? c.labelWidth + 'px' : null;
+                            var htmlnode = dojo.create('div', {
+                                className: 'varianttrack-sublabel',
+                                id: thisB.config.label + '_' + key,
+                                style: {
+                                    position: 'absolute',
+                                    height: c.style.height - 1 + 'px',
+                                    width: c.showLabels ? width : '10px',
+                                    font: c.labelFont,
+                                    backgroundColor: elt.color
+                                },
+                                innerHTML: c.showLabels ? key : ''
+                            }, thisB.div);
+
+                            on(htmlnode, c.clickTooltips ? 'click' : 'mouseover', function () {
+                                Tooltip.show(key + '<br />' + (elt.description || '') + '<br />' + (elt.population || ''), htmlnode);
+                            });
+                            on(htmlnode, 'mouseleave', function () {
+                                Tooltip.hide(htmlnode);
+                            });
+
+
+                            return htmlnode;
+                        });
+                    });
+                });
+            }
+
+            this.inherited(arguments);
+        },
         _trackMenuOptions: function () {
             var opts = this.inherited(arguments);
             var thisB = this;
