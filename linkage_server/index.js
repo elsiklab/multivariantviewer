@@ -5,7 +5,7 @@ var child = require('child_process');
 var app = express();
 
 var settings = {
-    plink: 'plink2', // can be full path
+    plink: 'plink1.9', // can be full path
     tabix: 'tabix', // can be full path,
     deleteFiles: 1
 };
@@ -33,6 +33,7 @@ app.get('/', function(req, res) {
     proc.stdout.pipe(tabixvcf);
     proc.stderr.pipe(process.stderr);
     proc.on('exit', function() {
+        console.log(vcfname)
         var params = [ '--vcf', vcfname, '--r2', 'triangle', '--out', outputname, '--allow-extra-chr', '--write-snplist', '--maf', maf ];
         var p = child.spawn(settings.plink, params);
         p.stdout.pipe(process.stdout);
@@ -57,7 +58,7 @@ app.get('/', function(req, res) {
             }
         });
     });
-    
+
 });
 
 app.listen(process.env.EXPRESS_PORT || 4730);

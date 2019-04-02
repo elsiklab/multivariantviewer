@@ -25,64 +25,68 @@ function (
     return declare(BlockBased, {
         constructor: function () {
             this.redrawView = true;
-            this.def = this.getLD();
+            this.getLD()
         },
 
         getLD: function () {
             var ref;
             var thisB = this;
-            var region = this.browser.view.visibleRegion();
             this.featStarts = {};
-
-            // use this promise chain to get original names of refseq in vcf
-            var ret = this.store.getVCFHeader||this.store.getParser
-            var d1 = ret.call(this.store).then(function () {
-                var d = new Deferred();
-                thisB.store.indexedData.getLines(
-                    region.ref,
-                    region.start,
-                    region.end,
-                    function (line) {
-                        ref = line.ref;
-                    },
-                    function (res) {
-                        d.resolve(res);
-                    },
-                    function (error) {
+            this.def = new Deferred()
+            var region;
+            var disposer = setInterval(function() {
+                region = thisB.browser.view.visibleRegion();
+                if(!region.start && !region.end) { return }
+                clearInterval(disposer)
+				var ret = thisB.store.getVCFHeader||thisB.store.getParser
+				var d1 = ret.call(thisB.store).then(function () {
+					var d = new Deferred();
+					thisB.store.getFeatures(
+						region,
+						function (line) {
+							ref = line.get('seq_id');
+						},
+						function (res) {
+							d.resolve(res);
+						},
+						function (error) {
+							d.reject(error);
+						}
+					);
+					return d;
+				}).then(function() {
+                    var query = {
+                        ref: ref,
+                        start: region.start,
+                        end: region.end,
+                        url: thisB.config.baseUrl + '/' + thisB.config.urlTemplate,
+                        maf: thisB.config.maf
+                    };
+                    var d = new Deferred();
+                    request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function (res) {
+                        thisB.results = thisB.parseResults(res);
+                        d.resolve();
+                    }, function (error) {
                         d.reject(error);
-                    }
-                );
-                return d;
-            }).then(function () {
-                var query = {
-                    ref: ref,
-                    start: region.start,
-                    end: region.end,
-                    url: thisB.config.baseUrl + '/' + thisB.config.urlTemplate,
-                    maf: thisB.config.maf
-                };
-                var d = new Deferred();
-                request(thisB.config.ldviewer + '?' + ioQuery.objectToQuery(query)).then(function (res) {
-                    thisB.results = thisB.parseResults(res);
-                    d.resolve();
+                    });
+                    return d;
+                })
+
+
+                var d2 = new Deferred();
+                thisB.store.getFeatures(region, function (feat) {
+                    thisB.featStarts[feat.get('name')] = feat.get('start');
+                }, function (res) {
+                    d2.resolve(res);
                 }, function (error) {
-                    d.reject(error);
+                    d2.reject(error);
                 });
-                return d;
-            });
 
 
-            var d2 = new Deferred();
-            thisB.store.getFeatures(region, function (feat) {
-                thisB.featStarts[feat.get('name')] = feat.get('start');
-            }, function (res) {
-                d2.resolve(res);
-            }, function (error) {
-                d2.reject(error);
-            });
-
-
-            return all([d1, d2]);
+                all([d1, d2]).then(function() {
+                    thisB.def.resolve(true)
+                })
+            }, 100)
         },
 
         fillBlock: function (args) {

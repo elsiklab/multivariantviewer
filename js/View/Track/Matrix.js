@@ -137,9 +137,10 @@ function (
             var thisB = this;
             this.snps = [];
             this.labelsCompleted.then(function () {
-                setTimeout(function() {
+                var disposer = setInterval(function() {
                     var region = thisB.browser.view.visibleRegion();
                     if(!region.start && !region.end) { return }
+                    clearInterval(disposer)
                     thisB.store.getFeatures(region, function (feat) {
                         thisB.snps.push(feat);
                     }, function () {
@@ -149,7 +150,7 @@ function (
                         thisB.fatalError = error;
                         thisB.def.reject(error);
                     });
-                },1000)
+                },100)
             });
         },
 
@@ -185,7 +186,7 @@ function (
                             var key = keys[i];
                             var col;
                             if (genotypes[key].GT) {
-                                var valueParse = genotypes[key].GT.values[0];
+                                var valueParse = ((genotypes[key].GT||{}).values||[])[0]||'';
                                 var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                                 var split = valueParse.split(splitter);
                                 if (!splitter) {
