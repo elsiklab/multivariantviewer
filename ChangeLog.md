@@ -1,3 +1,7 @@
+# Version 1.0.4
+
+- Better adapted the fix that was added in 1.0.3 to the LDTrack and Matrix type
+
 # Version 1.0.3
 
 - Add fix for @gmod/vcf and JBrowse 1.16+
