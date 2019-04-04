@@ -25,36 +25,36 @@ function (
     return declare(BlockBased, {
         constructor: function () {
             this.redrawView = true;
-            this.getLD()
+            this.getLD();
         },
 
         getLD: function () {
             var ref;
             var thisB = this;
             this.featStarts = {};
-            this.def = new Deferred()
+            this.def = new Deferred();
             var region;
-            var disposer = setInterval(function() {
+            var disposer = setInterval(function () {
                 region = thisB.browser.view.visibleRegion();
-                if(!region.start && !region.end) { return }
-                clearInterval(disposer)
-				var ret = thisB.store.getVCFHeader||thisB.store.getParser
-				var d1 = ret.call(thisB.store).then(function () {
-					var d = new Deferred();
-					thisB.store.getFeatures(
-						region,
-						function (line) {
-							ref = line.get('seq_id');
-						},
-						function (res) {
-							d.resolve(res);
-						},
-						function (error) {
-							d.reject(error);
-						}
-					);
-					return d;
-				}).then(function() {
+                if (!region.start && !region.end) { return; }
+                clearInterval(disposer);
+                var ret = thisB.store.getVCFHeader || thisB.store.getParser;
+                var d1 = ret.call(thisB.store).then(function () {
+                    var d = new Deferred();
+                    thisB.store.getFeatures(
+                        region,
+                        function (line) {
+                            ref = line.get('seq_id');
+                        },
+                        function (res) {
+                            d.resolve(res);
+                        },
+                        function (error) {
+                            d.reject(error);
+                        }
+                    );
+                    return d;
+                }).then(function () {
                     var query = {
                         ref: ref,
                         start: region.start,
@@ -70,7 +70,7 @@ function (
                         d.reject(error);
                     });
                     return d;
-                })
+                });
 
 
                 var d2 = new Deferred();
@@ -83,10 +83,10 @@ function (
                 });
 
 
-                all([d1, d2]).then(function() {
-                    thisB.def.resolve(true)
-                })
-            }, 100)
+                all([d1, d2]).then(function () {
+                    thisB.def.resolve(true);
+                });
+            }, 100);
         },
 
         fillBlock: function (args) {
@@ -112,7 +112,7 @@ function (
                 label: 'Refresh LD',
                 onClick: function () {
                     thisB.redrawView = true;
-                    thisB.def = thisB.getLD();
+                    thisB.getLD();
                     thisB.redraw();
                 }
             });

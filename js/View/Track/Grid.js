@@ -86,7 +86,7 @@ function (
 
             if (c.showLabels || c.showTooltips) {
                 this.labelsCompleted.then(function () {
-                    var ret = thisB.store.getVCFHeader||thisB.store.getParser
+                    var ret = thisB.store.getVCFHeader || thisB.store.getParser;
                     ret.call(thisB.store).then(function (header) {
                         var keys = dojo.clone(header.samples);
                         if (c.sortByPopulation) {
@@ -160,7 +160,7 @@ function (
         },
         fillBlock: function (args) {
             var thisB = this;
-            var ret = this.store.getVCFHeader||this.store.getParser
+            var ret = this.store.getVCFHeader || this.store.getParser;
             ret.call(this.store).then(function (header) {
                 thisB.totalHeight = header.samples.length * (thisB.config.style.height + (thisB.config.style.offset || 0));
                 thisB.heightUpdate(thisB.totalHeight, args.blockIndex);

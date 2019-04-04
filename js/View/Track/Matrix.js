@@ -2,24 +2,28 @@ define([
     'dojo/_base/declare',
     'dojo/_base/array',
     'dojo/_base/lang',
+    'dojo/on',
     'dojo/request',
     'dojo/dom-construct',
     'dojo/io-query',
     'JBrowse/View/Track/BlockBased',
     'JBrowse/Util',
     'dojo/Deferred',
+    'dijit/Tooltip',
     'dojox/data/CsvStore'
 ],
 function (
     declare,
     array,
     lang,
+    on,
     request,
     dom,
     ioQuery,
     BlockBased,
     Util,
     Deferred,
+    Tooltip,
     CsvStore
 ) {
     return declare(BlockBased, {
@@ -137,10 +141,10 @@ function (
             var thisB = this;
             this.snps = [];
             this.labelsCompleted.then(function () {
-                var disposer = setInterval(function() {
+                var disposer = setInterval(function () {
                     var region = thisB.browser.view.visibleRegion();
-                    if(!region.start && !region.end) { return }
-                    clearInterval(disposer)
+                    if (!region.start && !region.end) { return; }
+                    clearInterval(disposer);
                     thisB.store.getFeatures(region, function (feat) {
                         thisB.snps.push(feat);
                     }, function () {
@@ -150,7 +154,7 @@ function (
                         thisB.fatalError = error;
                         thisB.def.reject(error);
                     });
-                },100)
+                }, 100);
             });
         },
 
@@ -160,7 +164,7 @@ function (
                 var c = thisB.staticCanvas;
                 var ctx = c.getContext('2d');
                 var region = thisB.browser.view.visibleRegion();
-                if(!region.start && !region.end) return
+                if (!region.start && !region.end) return;
                 var snps = thisB.snps;
                 var boxw = (w - 200) / snps.length;
                 var elt = thisB.config.style.elt || thisB.config.style.height;
@@ -186,7 +190,7 @@ function (
                             var key = keys[i];
                             var col;
                             if (genotypes[key].GT) {
-                                var valueParse = ((genotypes[key].GT||{}).values||[])[0]||'';
+                                var valueParse = ((genotypes[key].GT || {}).values || [])[0] || '';
                                 var splitter = (valueParse.match(/[\|\/]/g) || [])[0];
                                 var split = valueParse.split(splitter);
                                 if (!splitter) {
@@ -223,7 +227,7 @@ function (
                     if (thisB.labels) {
                         for (var i = 0; i < keys.length; i++) {
                             var f = keys[i].trim();
-                            ctx.fillStyle = (thisB.labels[f]||{}).color;
+                            ctx.fillStyle = (thisB.labels[f] || {}).color;
                             ctx.fillRect(0, i * elt, 10, elt + 0.6);
                         }
                     }
@@ -251,7 +255,7 @@ function (
 
             if (c.showLabels || c.showTooltips) {
                 this.labelsCompleted.then(function () {
-                    var ret = thisB.store.getVCFHeader||thisB.store.getParser
+                    var ret = thisB.store.getVCFHeader || thisB.store.getParser;
                     ret.call(thisB.store).then(function (header) {
                         var keys = dojo.clone(header.samples);
                         if (c.sortByPopulation) {
